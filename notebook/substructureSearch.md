@@ -15,6 +15,7 @@ jupyter:
 
 # Search molecules from database
 
+- Activate the project and import MolecularGraph.
 
 ```julia
 import Pkg
@@ -22,11 +23,8 @@ Pkg.activate("..")
 using MolecularGraph
 ```
 
-## Download test database
-
 - Download public domain drug dataset provided by [DrugBank](https://drugbank.ca).
 - **(Note)** the data size is a bit large (25.2 MB).
-- `Graphmol.fetchfile` is almost same as the Julia built-in function `download(url, destination)` but it checks if the file already exists. Save the data to your workspace directory and then unzip it.
 
 ```julia
 # Create data directory
@@ -42,8 +40,6 @@ isfile(dest) || download(url, dest)
 run(`unzip -n -d $data_dir　$dest`);
 ```
 
-## Generate molecules
-
 - `sdfilereader` loads SDFile text data from the file, and generates array of molecule objects.
 - In this tutorial, the first 2000 molecules were extracted from the file for the test.
 
@@ -53,8 +49,7 @@ mols = collect(Iterators.take(sdfilereader(path), 2000))
 println("OK")
 ```
 
-## Search function
-
+- Then, define convenient function for substructure search.
 - `parse` SMARTS strings into query molecule objects.
 - `isquerymatch(mol, query)` compares a molecule-query pair and returns true if they match.
 
@@ -78,7 +73,7 @@ function substrsearch(smarts)
 end
 ```
 
-## Do substructure search
+## Substructure search
 
 
 ```julia

@@ -29,8 +29,7 @@ Pkg.activate("..")
 using MolecularGraph
 using MolecularGraph.MolecularGraphModel
 
-
-#  Download test data from PubChem
+# Download test data from PubChem
 
 # PubChem ID->Name
 compounds = Dict(
@@ -51,9 +50,7 @@ for (cid, name) in compounds
     isfile(dest) || download(url, dest);
 end
 
-
 # Convenient function to display a pair of mol images
-
 function displayimgpair(img1, img2)
     """<div>
         <div style="float:left">$(img1)</div>
@@ -61,8 +58,6 @@ function displayimgpair(img1, img2)
     </div>"""
 end
 ```
-
-## Basic examples
 
 - Let's try MCS functionalities with very small molecules.
 - Drop hydrogens from downloaded molecule data by `makehydrogensimplicit`
@@ -79,7 +74,7 @@ svg2 = drawsvg(aminocoumarin, 200, 200)
 display("text/html", displayimgpair(svg1, svg2))
 ```
 
-### Maximum common induced substructure (MCIS)
+## Maximum common induced substructure (MCIS)
 
 - `mcismol` method calculates maximum common induced substructure (MCIS).
 - `mcismol` returns a tuple `(mapping, status)`.
@@ -118,7 +113,7 @@ println("MCIS size: $(length(mapping))")
 - You can customize `nodematch` function and pass it to `mcismol` as an optional argument `nodematcher`.
 
 
-### Maximum common edge-induced substructure (MCES)
+## Maximum common edge-induced substructure (MCES)
 
 - `mcesmol` calculates maximum common edge-induced substructure (MCES).
 - Most chemists may feel that MCES is more intuitive than MCIS.
@@ -139,7 +134,7 @@ println("Status: $(status)")
 println("MCES size: $(length(mapping))")
 ```
 
-### Connected MCS
+## Connected MCS
 
 - By default, `mcesmol` and `mcismol` calculate disconnected MCS.
 - Pass keyword argument `connected=True` to them to enable connected MCS mode.

@@ -15,6 +15,7 @@ jupyter:
 
 # Getting started
 
+- Activate the project and import MolecularGraph.
 
 ```julia
 import Pkg
@@ -22,10 +23,7 @@ Pkg.activate("..")
 using MolecularGraph
 ```
 
-## Retrieve chemical data from PubChem
-
-- PubChem provides REST API access that enables us to search chemicals by their name, chemical properties, structures and other attributes via HTTP.
-- `MolecularGraph.pubchemsdf` fetches a SDFile record of a compound from PubChem database by compound ID (PubChem CID) and puts it into temporary cache directory (constant `MolecularGraph.pubchemdir` is set to the path of the default cache store.
+- Chemical structure data for tutorials can be downloaded from PubChem via HTTP.
 
 ```julia
 cid = "6437877"  # PubChem CID
@@ -41,7 +39,7 @@ dest = joinpath(data_dir, "$(name).mol")
 isfile(dest) || download(url, dest);
 ```
 
-- `sdftomol` converts SDFile text into molecular object.
+- `sdftomol` converts a SDFile (.mol or .sdf) into a molecular object.
 - `drawsvg` generates SVG format image in the given size (width=300, height=300).
 - Then, `display` the molecule on the notebook.
 
@@ -51,8 +49,9 @@ mol_svg = drawsvg(pcmol, 300, 300)
 display("image/svg+xml",  mol_svg)
 ```
 
-- There are so many trivial hydrogens.
+- Oops, there are so many trivial hydrogens.
 - Hydrogens can be removed by `makehydrogensimplicit`.
+- Technically, `makehydrogensimplicit` returns "subgraph view" of the original molecule. In this case, the original molecule would not be used further, so generate new molecule from the view by using `graphmol`.
 
 ```julia
 mol = graphmol(makehydrogensimplicit(pcmol))
@@ -78,7 +77,7 @@ println("Rotatable bonds: ", rotatablecount(mol))
 
  ## Show atom indices
 
-- `drawsvg` method is a convenient method that generates `SvgCanvas` object, calls `draw2d!` to set molecule components, and then calls `tosvg` to finalize SVG image.
+- `drawsvg` is a convenient method that generates `SvgCanvas` object, calls `draw2d!` to set molecule components and then calls `tosvg` to finalize SVG image.
 - `drawatomindex!` adds atom index to the molecular image canvas.
 -  '!' of `draw2d!` and `drawatomindex!` is a Julia language convention which means the function is destructive. In this case, `draw2d!` modifies `SvgCanvas` by adding molecule drawing settings and components.
 - The default atom indices are the same order as the atom record in SDFile.
@@ -108,7 +107,7 @@ end
 ```
 
 - Some of these terms are subset of others (for example, thiazole "is a" five membered ring). Largest in size and most specified terms often give us important information.
-- `largest components`enriches functional group information by collecting largest and specified terms from the functional group graph.
+- `largest components` enriches functional group information by collecting largest and specified terms from the functional group graph.
 
 ```julia
 display("image/svg+xml",  mol_svg)

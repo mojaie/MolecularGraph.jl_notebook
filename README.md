@@ -1,10 +1,10 @@
 
-MolecularGraph.jl - Notebooks for tutorial
+MolecularGraph.jl tutorial notebooks
 ===========================================
 
 
-Environment requirement
-------------------------
+Quickstart
+----------------
 
 1. Clone the repository
 
@@ -56,13 +56,16 @@ Updating `~/Workspace/MolecularGraph.jl_notebook/Manifest.toml`
 ...
 ```
 
+Have fun!
 
-Getting started
+
+
+Notebooks
 ------------------------
 
-- [Getting started](https://nbviewer.jupyter.org/github/mojaie/graphmol.jl/blob/master/notebook/gettingStarted.ipynb)
-- [Search molecules from database](https://nbviewer.jupyter.org/github/mojaie/graphmol.jl/blob/master/notebook/substructureSearch.ipynb)
-- [Maximum common substructure (MCS)](https://nbviewer.jupyter.org/github/mojaie/graphmol.jl/blob/master/notebook/mcs.ipynb)
+- [Getting started](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook/gettingStarted.ipynb)
+- [Search molecules from database](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook/substructureSearch.ipynb)
+- [Maximum common substructure (MCS)](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook/mcs.ipynb)
 
 
 

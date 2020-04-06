@@ -92,8 +92,6 @@ SDFiles downloaded from PubChem have hydrogen nodes. In practice, hydrogens whic
 
 - `removehydrogens(mol, all=true)`(default) will return a molecule with all hydrogen nodes removed, whereas `all=false` will return a molecule with only trivial hydrogens removed (no charge, no unpaired electron, no isotope information and no stereochemistry).
 
-`addhydrogens` will return a molecule with all hydrogen nodes are explicitly attached. Note that newly attached hydrogens have no coordinate so no longer available for drawing (`coords2d(mol, recalculate=true)` worth trying).
-
 ```julia
 setstereocenter!(mol)
 mol = graphmol(removehydrogens(mol, all=false))

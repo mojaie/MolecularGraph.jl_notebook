@@ -67,7 +67,7 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[MolecularGraph]]
 deps = ["Cxx", "Documenter", "Libdl", "LinearAlgebra", "Printf", "Statistics", "Test", "YAML", "coordgenlibs_jll"]
-git-tree-sha1 = "3295937f59df2a069f766d9966b8214f18030aff"
+git-tree-sha1 = "475b3fd95e0b00a401ad8aa8a2925a2cefccda40"
 repo-rev = "master"
 repo-url = "../MolecularGraph.jl"
 uuid = "6c89ec66-9cd8-5372-9f91-fabc50dd27fd"

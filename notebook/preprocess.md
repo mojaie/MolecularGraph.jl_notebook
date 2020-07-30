@@ -6,11 +6,11 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.2'
-      jupytext_version: 1.4.0
+      jupytext_version: 1.4.2
   kernelspec:
-    display_name: Julia 1.3.1
+    display_name: Julia 1.4.1
     language: julia
-    name: julia-1.3
+    name: julia-1.4
 ---
 
 # Preprocessing
@@ -25,27 +25,43 @@ Your chemical structure data may have some inconsistency in molecular graph nota
 
 
 ```julia
-import Pkg
+using Pkg
 Pkg.activate("..")
 using MolecularGraph
 ```
 
 ## Kekulization
 
-SMILES allows aromatic bond notation without specific bond order value. Although we know it is intrinsic expression of aromaticity, it is sometimes inconvenient in the case where we need appearent atom valence to calculate molecular properties.
+SMILES allows aromatic bond notation without specific bond order value. Although we know it is intrinsic expression of aromaticity, it is sometimes inconvenient in the case where we need appearent atom valence to calculate molecular properties. Kekulization is well-known technique to align double bonds along aromatic rings.
 
+Actually, `smilestomol(mol)` method do kekulization by `kekulize!(mol)` in it so usually we don't have to care about it. Here we use `parse(SMILES, mol)` that just parse SMILES to know how `kekulize!` work.
 `kekulize!` converts aromatic bonds into single/double bonds.
 
 ```julia
-mol = smilestomol("o1ccc2c1cncn2")
+mol = parse(SMILES, "o1ccc2c1cncn2")
 molsvg = drawsvg(mol, 150, 150)
-# Aromatic bond drawing (e.g. dashed double bond) is not supported yet
+# Note: aromatic bond notation (e.g. dashed cycle path or circle in the ring) is not supported yet
 display("image/svg+xml",  molsvg)
 ```
 
 ```julia
-mol = smilestomol("o1ccc2c1cncn2")
+mol = parse(SMILES, "o1ccc2c1cncn2")
 kekulize!(mol)
+molsvg = drawsvg(mol, 150, 150)
+display("image/svg+xml",  molsvg)
+```
+
+Please be careful not to forget to write pyrrole hydrogen. It is not obvious that if nitrogens in aromatic rings are pyrrole-like (-NH-) or pyridine-like (=N-).
+
+Some cheminformatics toolkit may parse pyrrole N without H though it is grammatically wrong. In this case, MolecularGraph.jl returns ErrorException.
+
+```julia
+mol = smilestomol("n1cccc1")
+```
+
+```julia
+mol = smilestomol("[nH]1cccc1")
+mol = removehydrogens(mol)
 molsvg = drawsvg(mol, 150, 150)
 display("image/svg+xml",  molsvg)
 ```
@@ -88,16 +104,11 @@ display("image/svg+xml",  molsvg)
 
 ## Dealing with stereochemistry
 
-If you are working on stereochemistry,  apply following methods to the parsed molecule.
+One more thing `smilestomol` and `sdftomol` will automatically do by default is standardization of stereochemistry notation.
 
-- Molecule from SMILES: `setdiastreo!`
-- Molecule from SDFIle: `setstereocenter!` and `setdiastereo!`
+`setstereocenter!` sets stereocenter information to `Atom.stereo` by the same rule as SMILES notation (looking from the lowest indexed atom, 2nd, 3rd, 4th atoms are in clockwise/anticlockwise order). The values are `:clockwise`, `:anticlockwise`, `unspecified` or `atypical`.  If there is implicit hydrogens involved in stereochemistry, its index order priority is considered as same as the atom that the hydrogen is attached. `setstereocenter!` will be called inside `sdftomol` method.
 
-Stereocenter information is stored in `Atom.stereo` by the following stereocenter notation rule similar to SMILES (looking from the lowest indexed atom, 2nd, 3rd, 4th atoms are in clockwise/anticlockwise order). The values are `:clockwise`, `:anticlockwise`, `unspecified` or `atypical`.
-
-On the other hand, diastereomerism information is stored in `Bond.stereo` of double bonds. `:cis`, `:trans` or `:unspecified` will be set according cis/trans configuration of the lower indexed atoms at each side of the double bond.
-
-If there is implicit hydrogens involved in stereochemistry, its index order priority is considered as same as the atom that the hydrogen is attached.
+`setdiastereo!` sets diastereomerism information to `Bond.stereo` of double bonds. `:cis`, `:trans` or `:unspecified` will be set according cis/trans configuration of atom nodes at each side of the double bond (If there is two atom nodes on  one side, that of the lower indexed atom node). `setdiastereo!` will be called inside `sdftomol` and `smilestomol` methods.
 
 ```julia
 mol = smilestomol("C\\C(CO)=C/C=C/C")
@@ -106,9 +117,9 @@ molsvg = drawsvg(mol, 150, 150)
 display("image/svg+xml",  molsvg)
 ```
 
-Hydrogen nodes attached to the stereocenters can be removed by `removestereohydrogens` with keeping stereochemistry. Similary, explicit hydrogen nodes can be attached to the stereocenters by `addstereohydrogen`. As newly added hydrogen does not have coordinates information, `recalculatecoords=true` option is necessary for `drawsvg`.
+Hydrogen nodes attached to the stereocenters can be removed by `removestereohydrogens` with keeping stereochemistry. Similary, explicit hydrogen nodes can be attached to the stereocenters by `addstereohydrogen`. As newly added hydrogen does not have coordinates information, `forcecoordgen=true` option is necessary for `drawsvg` to recalculate 2D coordinates of all atoms.
 
-Note that `removehydrogens` with `all=true` can affect stereochemistry of the molecule. Make sure to call `removestereohydrogens` before `removehydrogens` if you want to work on stereochemistry.
+Note that `removehydrogens(mol, all=true)` can break stereochemistry of the molecule. Make sure to call `removestereohydrogens` before that if you want to work on stereochemistry.
 
 ```julia
 mol = sdftomol(split("""
@@ -131,21 +142,20 @@ display("image/svg+xml",  molsvg)
 ```
 
 ```julia
-setstereocenter!(mol)
 mol = removestereohydrogens(mol)
-molsvg = drawsvg(mol, 150, 150, recalculatecoords=true)
+molsvg = drawsvg(mol, 150, 150; forcecoordgen=true)
 display("image/svg+xml",  molsvg)
 ```
 
 ```julia
 mol = addstereohydrogens(mol)
-molsvg = drawsvg(mol, 150, 150, recalculatecoords=true)
+molsvg = drawsvg(mol, 150, 150; forcecoordgen=true)
 display("image/svg+xml",  molsvg)
 ```
 
 ## Unifying representation of charges and delocalized electrons
 
-Many oxoacids and oniums that are ionized in physiological condition have variations of charge state in actual chemical structure data (e.g free acid or salt). In practice, these molecules are often formatted to uncharged molecule for consistency. `neutralizeacids!` and `neutralizeoniums!` are convenient methods for this purpose.
+Many oxoacids and oniums that are ionized in physiological condition have variations of charge state in actual chemical structure data (e.g free acid or salt). In practice, these molecules are often formatted to uncharged molecule for consistency. `protonateacids!` and `deprotonateoniums!` are convenient methods for this purpose.
 
 ```julia
 mol = smilestomol("CCCC(=O)[O-].[N+]CCCC[N+]")
@@ -154,9 +164,8 @@ display("image/svg+xml",  molsvg)
 ```
 
 ```julia
-neutralizeacids!(mol)
-neutralizeoniums!(mol)
-Graph.clearcache!(mol)
+protonateacids!(mol)
+deprotonateoniums!(mol)
 molsvg = drawsvg(mol, 200, 200)
 display("image/svg+xml",  molsvg)
 ```
@@ -172,7 +181,6 @@ display("image/svg+xml",  molsvg)
 ```julia
 depolarize!(mol)
 toallenelike!(mol)
-Graph.clearcache!(mol)
 molsvg = drawsvg(mol, 200, 200)
 display("image/svg+xml",  molsvg)
 ```

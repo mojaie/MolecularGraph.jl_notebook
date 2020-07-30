@@ -1,5 +1,6 @@
 
 .DS_Store
+.venv
 .ipynb_checkpoints
 
 _data

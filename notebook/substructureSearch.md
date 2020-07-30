@@ -6,11 +6,11 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.2'
-      jupytext_version: 1.4.0
+      jupytext_version: 1.4.2
   kernelspec:
-    display_name: Julia 1.3.1
+    display_name: Julia 1.4.1
     language: julia
-    name: julia-1.3
+    name: julia-1.4
 ---
 
 # Search molecules from database
@@ -18,13 +18,13 @@ jupyter:
 - Activate the project and import MolecularGraph.
 
 ```julia
-import Pkg
+using Pkg
 Pkg.activate("..")
 using MolecularGraph
 ```
 
 - Download public domain drug dataset provided by [DrugBank](https://drugbank.ca).
-- **(Note)** the data size is a bit large (25.2 MB).
+- **!!!Caution!!!** the data size is a bit large (25.2 MB).
 
 ```julia
 # Create data directory
@@ -40,18 +40,19 @@ isfile(dest) || download(url, dest)
 run(`unzip -n -d $data_dir　$dest`);
 ```
 
-- `sdfilereader` loads SDFile text data from the file, and generates array of molecule objects.
-- In this tutorial, the first 2000 molecules were extracted from the file for the test.
+`sdfilereader` loads SDFile text data from the file, and generates array of molecule objects. In this tutorial, the first 2000 molecules were extracted from the file for the test.
+
+Calling `precalculate!` prior to substructure search is highly recommended.
 
 ```julia
 path =  joinpath(data_dir, "open structures.sdf")
 mols = collect(Iterators.take(sdfilereader(path), 2000))
-println("OK")
+for mol in mols
+    precalculate!(mol)
+end
 ```
 
-- Then, define convenient function for substructure search.
-- `parse` SMARTS strings into query molecule objects.
-- `isquerymatch(mol, query)` compares a molecule-query pair and returns true if they match.
+Then, define convenient function for substructure search. `parse(SMARTS, string)` converts SMARTS strings into query molecule objects. `isquerymatch(mol, query)` compares a molecule-query pair and returns true if they match.
 
 ```julia
 function substrsearch(smarts)

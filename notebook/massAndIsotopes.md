@@ -6,11 +6,11 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.2'
-      jupytext_version: 1.4.0
+      jupytext_version: 1.4.2
   kernelspec:
-    display_name: Julia 1.3.1
+    display_name: Julia 1.4.1
     language: julia
-    name: julia-1.3
+    name: julia-1.4
 ---
 
 # Mass and isotopes
@@ -29,12 +29,10 @@ This tutorial includes following fundamental operations related to molecular mas
 This tutorial uses `Plots.jl` to display simulated mass spectrum.
 
 ```julia
-import Pkg
+using Pkg
 Pkg.activate("..")
 using MolecularGraph
 using Plots
-gr()
-Plots.GRBackend()
 
 # Convenient function to display a pair of mol images
 function displayimgpair(img1, img2)
@@ -43,7 +41,8 @@ function displayimgpair(img1, img2)
         <div style="float:left">$(img2)</div>
     </div>"""
 end
-;
+
+nothing
 ```
 
 ## Molecular weight (Relative molecular mass)

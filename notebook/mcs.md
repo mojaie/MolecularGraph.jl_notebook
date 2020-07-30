@@ -6,11 +6,11 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.2'
-      jupytext_version: 1.4.0
+      jupytext_version: 1.4.2
   kernelspec:
-    display_name: Julia 1.3.1
+    display_name: Julia 1.4.1
     language: julia
-    name: julia-1.3
+    name: julia-1.4
 ---
 
 # Maximum common substructure (MCS)
@@ -24,10 +24,11 @@ MolecularGraph.js implements essential MCS methods for cheminformatics applicati
 
 
 ```julia
-import Pkg
+using Pkg
 Pkg.activate("..")
+Pkg.develop(PackageSpec(path="../../MolecularGraph.jl"))
 using MolecularGraph
-using MolecularGraph.MolecularGraphModel
+using MolecularGraph.Graph
 
 # Download test data from PubChem
 
@@ -64,11 +65,13 @@ end
 
 ```julia
 ldopa = sdftomol(joinpath(data_dir, "Levodopa.mol"))
-ldopa = graphmol(makehydrogensimplicit(ldopa))
+ldopa = removehydrogens(ldopa; all=true)
+precalculate!(ldopa)
 svg1 = drawsvg(ldopa, 200, 200)
 
 aminocoumarin = sdftomol(joinpath(data_dir, "3-Aminocoumarin.mol"))
-aminocoumarin = graphmol(makehydrogensimplicit(aminocoumarin))
+aminocoumarin = removehydrogens(aminocoumarin; all=true)
+precalculate!(aminocoumarin)
 svg2 = drawsvg(aminocoumarin, 200, 200)
 
 display("text/html", displayimgpair(svg1, svg2))
@@ -175,11 +178,11 @@ println("Connected MCES size: $(length(mapping))")
 
 ```julia
 cefditoren = sdftomol(joinpath(data_dir, "Cefditoren Pivoxil.mol"))
-cefditoren = graphmol(makehydrogensimplicit(cefditoren))
+cefditoren = removehydrogens(cefditoren, all=true)
 svg1 = drawsvg(cefditoren, 250, 250)
 
 ceftazidime = sdftomol(joinpath(data_dir, "Ceftazidime.mol"))
-ceftazidime = graphmol(makehydrogensimplicit(ceftazidime))
+ceftazidime = removehydrogens(ceftazidime, all=true)
 svg2 = drawsvg(ceftazidime, 250, 250)
 
 display("text/html", displayimgpair(svg1, svg2))

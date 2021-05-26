@@ -5,12 +5,12 @@ jupyter:
     text_representation:
       extension: .md
       format_name: markdown
-      format_version: '1.2'
-      jupytext_version: 1.4.2
+      format_version: '1.3'
+      jupytext_version: 1.11.2
   kernelspec:
-    display_name: Julia 1.4.1
+    display_name: Julia 1.6.0
     language: julia
-    name: julia-1.4
+    name: julia-1.6
 ---
 
 # Search molecules from database
@@ -52,14 +52,14 @@ for mol in mols
 end
 ```
 
-Then, define convenient function for substructure search. `parse(SMARTS, string)` converts SMARTS strings into query molecule objects. `isquerymatch(mol, query)` compares a molecule-query pair and returns true if they match.
+Then, define convenient function for substructure search. `parse(SMARTS, string)` converts SMARTS strings into query molecule objects. `hassubstructmatch(mol, query)` compares a molecule-query pair and returns true if they match.
 
 ```julia
 function substrsearch(smarts)
     matched = []
     query = parse(SMARTS, smarts)
     for (i, m) in enumerate(mols)
-        if isquerymatch(m, query)
+        if hassubstructmatch(m, query)
             push!(matched, m)
             print("@")
         else

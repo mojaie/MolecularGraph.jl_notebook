@@ -6,6 +6,11 @@ MolecularGraph.jl tutorial notebooks
 Quickstart
 ----------------
 
+1. Install Julia kernel to Jupyter Notebook
+
+If you are new to Jupyter Notebook with Julia kernel, please set up Julia kernel according to IJulia instruction.  
+https://github.com/JuliaLang/IJulia.jl
+
 1. Clone the repository
 
 ```
@@ -25,7 +30,7 @@ Cloning into 'MolecularGraph.jl_notebook'...
   (_)     | (_) (_)    |
    _ _   _| |_  __ _   |  Type "?" for help, "]?" for Pkg help.
   | | | | | | |/ _` |  |
-  | | |_| | | | (_| |  |  Version 1.3.0 (2019-11-26)
+  | | |_| | | | (_| |  |  Version 1.6.0 (2021-03-24)
  _/ |\__'_|_|_|\__'_|  |  Official https://julialang.org/ release
 |__/                   |
 
@@ -35,25 +40,18 @@ julia>
 3. Type `]` to enter Pkg mode and create project
 
 ```
-(v1.3) pkg> activate .
+(@1.6) pkg> activate .
 Activating new environment at `your_workspace/MolecularGraph_notebook/Project.toml`
 ```
 
 4. Install packages
 
+`instantiate` the notebook tutorial project. If you do not have 'Plot.jl' yet, it may take several minites to install.
+
 ```
-(v1.3) pkg> add MolecularGraph
-Updating registry at `~/.julia/registries/General`
-Updating git-repo `https://github.com/JuliaRegistries/General.git`
-Resolving package versions...
-Updating `~/Workspace/MolecularGraph.jl_notebook/Project.toml`
-[6c89ec66] + MolecularGraph v0.3.2
-Updating `~/Workspace/MolecularGraph.jl_notebook/Manifest.toml`
-[19ecbf4d] + Codecs v0.5.0
-[34da2185] + Compat v2.2.0
-[ffbed154] + DocStringExtensions v0.8.1
-[e30172f5] + Documenter v0.24.6
-...
+(MolecularGraph) pkg> instantiate
+  Progress [========================================>]  1/1
+1 dependency successfully precompiled in 8 seconds (16 already precompiled)
 ```
 
 Have fun!
@@ -83,4 +81,4 @@ License
 Copyright
 ------------------------
 
-(C) 2020 Seiji Matsuoka
+(C) 2020-2021 Seiji Matsuoka

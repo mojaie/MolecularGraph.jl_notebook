@@ -5,29 +5,30 @@ jupyter:
     text_representation:
       extension: .md
       format_name: markdown
-      format_version: '1.2'
-      jupytext_version: 1.4.2
+      format_version: '1.3'
+      jupytext_version: 1.11.2
   kernelspec:
-    display_name: Julia 1.4.1
+    display_name: Julia 1.6.0
     language: julia
-    name: julia-1.4
+    name: julia-1.6
 ---
 
-<!-- #region -->
 # Calculate descriptors
 
+MolecularGraph.jl version: 0.10.0
 
 This tutorial includes following fundamental operations for molecular descriptors.
 
 - Concept of descriptor function/array
 - Cache mechanism
 - Frequently used descriptors
-<!-- #endregion -->
 
 ```julia
 using Pkg
 Pkg.activate("..")
 using MolecularGraph
+using MolecularGraph.Graph
+using BenchmarkTools
 ```
 
 ```julia
@@ -78,24 +79,17 @@ Note that manipulation of the molecular graph topology and attributes will break
 
 ## Cache mechanism
 
-`Graph.@cachefirst` macro enables caching descriptor arrays already calculated. This macro is set to most of default descriptor functions. We can simply call functions with `Graph.@cache` macro to return the result and also store the result to GraphMol.cache field.
+You can cache the descriptors by calling the `setcache!` method.　Its second argument is a symbol of the method name, which must be a method defined following `Graph.@cachefirst` macro.
 
+`Graph.@cachefirst` macro first checks if the `GraphMol` given as a first argument of the method caches the result, and returns the cache if it exists, or returns the result of executing the method if it does not.
 
 ```julia
-using MolecularGraph.Graph
-
 mol2 = clone(mol)
-v = @cache valence(mol2)
-println(v)
-```
-
-```julia
+setcache!(mol2, :valence);
 mol2.cache
 ```
 
 ```julia
-using BenchmarkTools
-
 @benchmark valence(mol)
 ```
 
@@ -106,9 +100,9 @@ using BenchmarkTools
 ### Tips
 
 - Some descriptor function allows keyword arguments (e.g. `coordgen(mol; forcecoordgen=true)`). If keyword arguments are given explicitly, cache will not be used.
-- If the molecule object is modified (e.g. by preprocessing methods), you can recalculate and cache the result by calling the function with `@cache` macro again.
+- If the molecule object is modified (e.g. by preprocessing methods), you may want to recalculate and cache the result by calling the function with `setcache!` again.
 - `clearcache!(mol)` empties the cache dict.
-- `precalculate!(mol)` is a convenient method to store caches of cost-effective 5 or 6 descriptors. It is recommended to apply this method after you defined your molecular model and run preprocessing methods.
+- `precalculate!(mol)` is a convenient method to cache several cost-effective descriptors together. It is recommended to run this method after loading and preprocessing the molecule.
 
 ```julia
 clearcache!(mol2)
@@ -127,7 +121,7 @@ For reproducibility, there is some important conventions for descriptor function
 - All descriptor functions take a GraphMol or SubgraphView as the only argument (optional keyword arguments are acceptable but caching will not work).
 - All descriptor functions never change the molecule object given as an argument.
 - All descriptor functions only refer the molecular graph and attributes, other descriptor arrays and global constants. Other external mutable objects are never refered from inside the function.
-- Return value of all descriptor functions must be in Julia built-in type (for serialization to JSON)
+- Return values of all descriptor functions must be in Julia built-in collection type (for serialization to JSON)
 
 <!-- #region -->
 ## Frequently used descriptors
@@ -160,9 +154,6 @@ fusedrings(mol)
 
 `Graph.connectedcomponents(mol)`: list of connected components (molecules) by node set.
 
-```julia
-Graph.connectedcomponents(mol)
-```
 
 `ishacceptor(mol)`: whether the atom is a hydrogen acceptor or not (N, O or F with free lone pairs)
 

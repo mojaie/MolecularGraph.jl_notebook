@@ -5,15 +5,17 @@ jupyter:
     text_representation:
       extension: .md
       format_name: markdown
-      format_version: '1.2'
-      jupytext_version: 1.4.2
+      format_version: '1.3'
+      jupytext_version: 1.11.2
   kernelspec:
-    display_name: Julia 1.4.1
+    display_name: Julia 1.6.0
     language: julia
-    name: julia-1.4
+    name: julia-1.6
 ---
 
 # Getting started
+
+MolecularGraph.jl version: 0.10.0
 
 This tutorial includes following fundamental operations of molecular mining.
 
@@ -33,6 +35,7 @@ If you cloned the notebook tutorial package according to [Quickstart](https://gi
 using Pkg
 Pkg.activate("..")
 using MolecularGraph
+using MolecularGraph.Graph
 ```
 
 ## Fetching test molecule data from public resources
@@ -155,34 +158,48 @@ println("LogP: ", wclogp(mol))
 println("Rotatable bonds: ", rotatablecount(mol))
 ```
 
-## Functional group analysis
+## Substructure search / molecular query
 
-`MolecularGraph.jl` provides SMARTS and terminology graph-based functional group analysis.
-
-SMARTS queries listed in YAML files in assets/funcgroup folder are applied to find functional groups from the molecule. The SMARTS query list in the files have graph structure like Gene Ontology or ChEMBL CHEMINF. Each SMARTS records may have isa or has fields.
-
-- `isa`: e.g. primary alcohol `isa` alcohol but not all alcohols are primary alcohol.
-- `has`: e. g. carboxyl group `has` a hydroxy group and a carbonyl group.
-
-The substructure terminology graph indicates which substructures does the molecule have, whereas GO/CHEMINF indicates which biological function does the gene/molecule have.
+`hassubstructmatch` is a convenient function to find substructure (or query) matches. 
 
 ```julia
-fg = functionalgroupgraph(mol)
-
-for (term, components) in fg.componentmap
-    nodes = [sort(collect(comp)) for comp in components]
-    println("Group: $(string(term)): ", nodes...)
-end
+substr = smilestomol("s1cncc1")
+println(hassubstructmatch(mol, substr))
+query = smartstomol(raw"[$([N;r]A=A)]")  # non-aromatic ring nitrogen adjacent to double bond
+println(hassubstructmatch(mol, query))
 ```
 
-Some of these terms are subset of others (for example, thiazole `isa` five membered ring). Largest in size and most specified terms often give us important information. `largest components` enriches functional group information by collecting largest and most specified terms from the functional group tree.
+`substructmatches` returns an iterator that yields mappings of matched nodes.
 
 ```julia
+matched1 = Set(Iterators.flatten(keys(m) for m in substructmatches(mol, substr)))
+subg1 = nodesubgraph(mol, matched1)
+svg1 = drawsvg(mol, 300, 300, highlight=subg1)
+display("image/svg+xml", svg1)
+```
+
+```julia
+matched2 = iterate(substructmatches(mol, query))[1]
+subg2 = nodesubgraph(mol, keys(matched2))
+svg2 = drawsvg(mol, 300, 300, highlight=subg2)
+display("image/svg+xml", svg2)
+```
+
+## Query-based substructure mining
+
+Query-based substructure mining is often used to classify compounds by their characteristics, and to predict their reactivity, toxicity or physical properties.
+`MolecularGraph.jl` provides a default query set as a YAML file for an example of simple functional group mining. This can be easily extended for some applications like structural alert or toxicity prediction (See query-based substructure mining tutorial for details).
+
+```julia
+qr = query_relationship()
+flt = filter_queries(qr, mol)
+
 display("image/svg+xml",  mol_svg)
-for (term, components) in largestcomponents(fg)
-    nodes = [sort(collect(comp)) for comp in components]
-    if !isempty(nodes)
-        println("Group: $(string(term)): ", nodes...)
-    end
+
+for n in 1:nodecount(flt)
+    indegree(flt, n) == 0 || continue
+    key = nodeattr(flt, n)["key"]
+    matched = nodeattr(flt, n)["matched"]
+    println("Group: $(key): ", matched)
 end
 ```

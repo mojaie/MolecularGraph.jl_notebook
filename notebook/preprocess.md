@@ -5,15 +5,17 @@ jupyter:
     text_representation:
       extension: .md
       format_name: markdown
-      format_version: '1.2'
-      jupytext_version: 1.4.2
+      format_version: '1.3'
+      jupytext_version: 1.11.2
   kernelspec:
-    display_name: Julia 1.4.1
+    display_name: Julia 1.6.0
     language: julia
-    name: julia-1.4
+    name: julia-1.6
 ---
 
 # Preprocessing
+
+MolecularGraph.jl version: 0.10.0
 
 Your chemical structure data may have some inconsistency in molecular graph notation that comes from difference in input data format. Also preferable molecular graph model should be selected according to the application.  `MolecularGraph.jl` offers preprocessing methods that helps unification of expression and making consistent molecular graph model as you like.
 

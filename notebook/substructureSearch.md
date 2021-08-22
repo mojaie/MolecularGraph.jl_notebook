@@ -15,6 +15,8 @@ jupyter:
 
 # Search molecules from database
 
+MolecularGraph.jl version: 0.10.0
+
 - Activate the project and import MolecularGraph.
 
 ```julia
@@ -24,7 +26,7 @@ using MolecularGraph
 ```
 
 - Download public domain drug dataset provided by [DrugBank](https://drugbank.ca).
-- **!!!Caution!!!** the data size is a bit large (25.2 MB).
+- Note: the data size is a bit large (25.2 MB).
 
 ```julia
 # Create data directory

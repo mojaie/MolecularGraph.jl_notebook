@@ -5,15 +5,17 @@ jupyter:
     text_representation:
       extension: .md
       format_name: markdown
-      format_version: '1.2'
-      jupytext_version: 1.4.2
+      format_version: '1.3'
+      jupytext_version: 1.11.2
   kernelspec:
-    display_name: Julia 1.4.1
+    display_name: Julia 1.6.0
     language: julia
-    name: julia-1.4
+    name: julia-1.6
 ---
 
 # Mass and isotopes
+
+MolecularGraph.jl version: 0.10.0
 
 This tutorial includes following fundamental operations related to molecular mass and isotopes.
 
@@ -34,7 +36,7 @@ Pkg.activate("..")
 using MolecularGraph
 using Plots
 
-# Convenient function to display a pair of mol images
+# To display a pair of mol images
 function displayimgpair(img1, img2)
     """<div>
         <div style="float:left">$(img1)</div>

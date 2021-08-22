@@ -15,6 +15,8 @@ jupyter:
 
 # Maximum common substructure (MCS)
 
+MolecularGraph.jl version: 0.10.0
+
 MolecularGraph.js implements essential MCS methods for cheminformatics applications.
 
 - Node induced (MCIS) / Edge induced (MCES)
@@ -28,6 +30,7 @@ using Pkg
 Pkg.activate("..")
 using MolecularGraph
 using MolecularGraph.Graph
+using Profile
 ```
 
 ```julia
@@ -62,16 +65,16 @@ end
 ```
 
 - Let's try MCS functionalities with very small molecules.
-- Drop hydrogens from downloaded molecule data by `makehydrogensimplicit`
+- Drop hydrogens from downloaded molecule data by `removehydrogens(mol, all=true)`
 
 ```julia
 ldopa = sdftomol(joinpath(data_dir, "Levodopa.mol"))
-ldopa = removehydrogens(ldopa; all=true)
+ldopa = removehydrogens(ldopa, all=true)
 precalculate!(ldopa)
 svg1 = drawsvg(ldopa, 200, 200)
 
 aminocoumarin = sdftomol(joinpath(data_dir, "3-Aminocoumarin.mol"))
-aminocoumarin = removehydrogens(aminocoumarin; all=true)
+aminocoumarin = removehydrogens(aminocoumarin, all=true)
 precalculate!(aminocoumarin)
 svg2 = drawsvg(aminocoumarin, 200, 200)
 
@@ -85,25 +88,15 @@ display("text/html", displayimgpair(svg1, svg2))
 - `mapping` (type `Dict{Int,Int}`) is a isomorphisim mapping of node(atom) indices between two molecules.
 - `nodesubgraph` can be used to retrieve the matched subgraph and then display the substructure.
 - `status`(type `Symbol`) shows the calculation status. `:done` means that the calculation was successfully finished.
+- Use `drawsvg` with `highlight` keyword to display the matched substructure.
 
 ```julia
 result = disconnectedmcis(ldopa, aminocoumarin)
 
 subg1 = nodesubgraph(ldopa, Set(keys(result.mapping)))
-svg1 = drawsvg(subg1, 200, 200)
+svg1 = drawsvg(ldopa, 200, 200, highlight=subg1)
 
 subg2 = nodesubgraph(aminocoumarin, Set(values(result.mapping)))
-svg2 = drawsvg(subg2, 200, 200)
-
-display("text/html", displayimgpair(svg1, svg2))
-println("Status: $(result.status)")
-println("MCIS size: $(length(result.mapping))")
-```
-
-- Use `drawsvg` with `highlight` keyword to display the matched substructure.
-
-```julia
-svg1 = drawsvg(ldopa, 200, 200, highlight=subg1)
 svg2 = drawsvg(aminocoumarin, 200, 200, highlight=subg2)
 
 display("text/html", displayimgpair(svg1, svg2))
@@ -192,12 +185,14 @@ println("MCES size: $(length(result.mapping))")
 - If it timed out, the status will be `timedout` and the result will be suboptimal common substructure size calculated so far.
 
 ```julia
-using Profile
 @profile disconnectedmces(cefditoren, ceftazidime, timeout=10)
 Profile.print(mincount=1000)
 ```
 
 - The most costful call was `maximalcliques` which yields maximal cliques. Maximum clique detection problem is known to be NP-hard.
+
+
+- Connected MCS is far faster than disconnected MCS.
 
 ```julia
 result = connectedmces(cefditoren, ceftazidime)
@@ -213,7 +208,7 @@ println("Status: $(result.status)")
 println("Connected MCES size: $(length(result.mapping))")
 ```
 
-- Connected MCS is far faster than disconnected MCS.
+- Or you can use `targetsize` keyword argument to know that these compounds have at least the given size of the common substructure. This feature is quite useful in library screening.
 
 ```julia
 result = disconnectedmces(cefditoren, ceftazidime, targetsize=20)
@@ -229,9 +224,6 @@ println("Status: $(result.status)")
 println("Connected MCES size: $(length(result.mapping))")
 ```
 
-- Or you can use `targetsize` keyword argument to know that these compounds have at least the given size of the common substructure. This feature is quite useful in library screening.
-
-
 ## Topological constraint
 
 - Disconnected MCS methods can detect as many matched fragments as possible, but it does not reflect spatial relationship of each fragments.
@@ -242,7 +234,7 @@ println("Connected MCES size: $(length(result.mapping))")
 - Distance mismatch tolerance parameter $\theta$ is also available as the keyword argument `tolerance`.
 
 ```julia
-result = tcmces(cefditoren, ceftazidime)
+result = tcmces(cefditoren, ceftazidime, tolerance=1)
 
 subg1 = edgesubgraph(cefditoren, Set(keys(result.mapping)))
 svg1 = drawsvg(cefditoren, 250, 250, highlight=subg1)

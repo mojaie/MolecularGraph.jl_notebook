@@ -1,0 +1,7 @@
+version: '3'
+services:
+  rdkit:
+    image: informaticsmatters/rdkit-python3-debian
+    volumes:
+      - ./scripts:/scripts
+      - ./workspace:/workspace

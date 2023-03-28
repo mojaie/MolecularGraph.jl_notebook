@@ -7,3 +7,4 @@
 *.ipynb
 workspace
 _data
+Manifest.toml

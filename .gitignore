@@ -4,7 +4,7 @@
 .ipynb_checkpoints
 
 
-*.ipynb
+benchmarking/notebooks/*.ipynb
 workspace
 _data
 Manifest.toml

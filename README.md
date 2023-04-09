@@ -1,10 +1,17 @@
 
-MolecularGraph.jl tutorial notebooks
+MolecularGraph.jl tutorial notebooks (Pluto.jl)
 ===========================================
 
+To run codes in your environment, see `Edit or run this notebook` instruction shown in the top-right of the tutorial pages below.
 
-Quickstart
-----------------
+- [Getting started](https://mojaie.github.io/MolecularGraph.jl_notebook/getting_started.jl.html)
+- [Molecular graph basics](https://mojaie.github.io/MolecularGraph.jl_notebook/molecular_graph_basics.jl.html)
+
+
+
+Legacy tutorials (MolecularGraph.jl v0.13 and below)
+-----------------------------------------
+
 
 1. Install Julia kernel to Jupyter Notebook
 
@@ -54,20 +61,14 @@ Activating new environment at `your_workspace/MolecularGraph_notebook/Project.to
 1 dependency successfully precompiled in 8 seconds (16 already precompiled)
 ```
 
-Have fun!
 
-
-
-Notebooks
-------------------------
-
-- [Getting started](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook/gettingStarted.ipynb)
-- [Basics of molecular graph](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook/molecularGraphBasics.ipynb)
-- [Preprocessing](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook/preprocess.ipynb)
-- [Calculation of descriptors](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook/calculateDescriptors.ipynb)
-- [Molecular/atomic mass and isotopes](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook/massAndIsotopes.ipynb)
-- [Search molecules from database](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook/substructureSearch.ipynb)
-- [Maximum common substructure (MCS)](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook/mcs.ipynb)
+- [Getting started](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook_v0_13/gettingStarted.ipynb)
+- [Basics of molecular graph](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook_v0_13/molecularGraphBasics.ipynb)
+- [Preprocessing](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook_v0_13/preprocess.ipynb)
+- [Calculation of descriptors](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook_v0_13/calculateDescriptors.ipynb)
+- [Molecular/atomic mass and isotopes](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook_v0_13/massAndIsotopes.ipynb)
+- [Search molecules from database](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook_v0_13/substructureSearch.ipynb)
+- [Maximum common substructure (MCS)](https://nbviewer.jupyter.org/github/mojaie/MolecularGraph.jl_notebook/blob/master/notebook_v0_13/mcs.ipynb)
 
 
 
@@ -81,4 +82,4 @@ License
 Copyright
 ------------------------
 
-(C) 2020-2021 Seiji Matsuoka
+(C) 2020-2023 Seiji Matsuoka

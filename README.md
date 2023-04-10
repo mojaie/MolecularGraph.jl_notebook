@@ -6,6 +6,9 @@ To run codes in your environment, see `Edit or run this notebook` instruction sh
 
 - [Getting started](https://mojaie.github.io/MolecularGraph.jl_notebook/getting_started.jl.html)
 - [Molecular graph basics](https://mojaie.github.io/MolecularGraph.jl_notebook/molecular_graph_basics.jl.html)
+- [Properties and descriptors](https://mojaie.github.io/MolecularGraph.jl_notebook/properties_and_descriptors.jl.html)
+- [Preprocessing](https://mojaie.github.io/MolecularGraph.jl_notebook/preprocessing.jl.html)
+- [Mass and isotopes](https://mojaie.github.io/MolecularGraph.jl_notebook/mass_and_isotopes.jl.html)
 
 
 

@@ -49,27 +49,19 @@ data_dir = let
 	data_dir
 end
 
-# ╔═╡ bb14b0ff-7caa-4379-8524-56eefa04d24a
-molfile = let
-	cid = "6437877"  # PubChem CID
-	name = "Cefditoren Pivoxil"  # FIle name
-	# Fetch
+# ╔═╡ 402d63c7-f1d4-47d8-9bd7-680f7fa0eef2
+function fetch_mol!(cid, name, datadir)
 	url = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/$(cid)/SDF"
 	dest = joinpath(data_dir, "$(name).mol")
 	isfile(dest) || download(url, dest);
-	dest
+	return dest
 end
 
+# ╔═╡ bb14b0ff-7caa-4379-8524-56eefa04d24a
+molfile = fetch_mol!("6437877", "Cefditoren Pivoxil", data_dir)
+
 # ╔═╡ 5c9ce573-809f-47d4-901c-db744c054f76
-molfile2 = let
-	cid = "5481173"  # PubChem CID
-	name = "Ceftazidime"  # FIle name
-	# Fetch
-	url = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/$(cid)/SDF"
-	dest = joinpath(data_dir, "$(name).mol")
-	isfile(dest) || download(url, dest);
-	dest
-end
+molfile2 = fetch_mol!("5481173", "Ceftazidime", data_dir)
 
 # ╔═╡ c15a6692-08ee-4d6d-94e6-09800b78ab36
 md"
@@ -101,7 +93,7 @@ md"
 ### Remove hydrogens
 
 - SDFiles downloaded from PubChem have hydrogen nodes. In practice, hydrogens which is not important are removed from molecular graphs for simplicity.
-- remove_hydrogens!(mol) removes hyhdrogen nodes that are not important (no charge, no unpaired electron, no isotope information and no stereochemistry).
+- `remove_hydrogens!(mol)` removes hyhdrogen vertices that are not important (no charge, no unpaired electron, no specific isotope composition and not involved in stereochemistry).
 "
 
 # ╔═╡ 090e782d-4892-480b-81f7-264c0f57327d
@@ -270,6 +262,7 @@ end
 # ╠═afe097a1-6ae9-4c66-90f5-38707ae0c29c
 # ╟─632276aa-90c8-4e99-a4c0-4472dfa60afc
 # ╠═337bad91-f2c6-4d14-b8ae-df179fae46d5
+# ╠═402d63c7-f1d4-47d8-9bd7-680f7fa0eef2
 # ╠═bb14b0ff-7caa-4379-8524-56eefa04d24a
 # ╠═5c9ce573-809f-47d4-901c-db744c054f76
 # ╟─c15a6692-08ee-4d6d-94e6-09800b78ab36

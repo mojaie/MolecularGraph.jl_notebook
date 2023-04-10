@@ -24,7 +24,7 @@ This tutorial includes following molecular graph basics.
 - Scope of MolecularGraph.jl
 - Considerations in molecular graph implementation
 - Basic operations provided by Graphs.jl interface
-- MolGraph type
+- MolGraph type and atom/bond properties
 "
 
 # ╔═╡ 51623203-9096-4125-a25b-1d66de219f8a
@@ -157,7 +157,7 @@ induced_subgraph(disconn, [1,2,3,14])
 
 # ╔═╡ 9ad9e39b-e5ae-451e-be9e-3a8e1c675541
 md"
-### MolGraph type
+### MolGraph type and atom/bond properties
 
 - The default data type of molecules generated from SMILES, SMARTS or SDFiles is a parametric type `MolGraph{T,V,E}`
 - `T` comes from SimpleGraph{T}, so this may be `Int64`
@@ -193,7 +193,7 @@ props(mol, 5)
 
 # ╔═╡ fd818784-3c69-4649-b7d6-3009e0f5ae22
 md"
-- `isaromatic` here means explicit aromaticity represented as small leters in SMILES. Actual aromaticity would be calculated automatically as a descriptor array (see properties and descriptors tutorial).
+`isaromatic` here means explicit aromaticity represented as small leters in SMILES. Actual aromaticity would be calculated automatically as a descriptor array (see properties and descriptors tutorial).
 "
 
 # ╔═╡ 649e4497-7d4b-4304-a958-0e2a1e934e2b
@@ -226,8 +226,62 @@ HTML(drawsvg(dictmol, 250, 250, atomindex=true))
 # ╔═╡ e7ebde94-c38c-46e8-99c5-47944b844832
 props(dictmol, 5)
 
+# ╔═╡ e73c55d7-4af3-4242-91cd-2520f3aba237
+md"
+Let's see a case created from SDFile
+"
+
+# ╔═╡ de592d8c-7e8a-4bb5-8f95-5a978045ffa6
+data_dir = let
+	# Create data directory
+	data_dir = "_data"
+	isdir(data_dir) || mkdir(data_dir)
+	data_dir
+end
+
+# ╔═╡ f6c2b832-db03-43fd-859f-5e95161f1d5e
+function fetch_mol!(cid, name, datadir)
+	url = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/$(cid)/SDF"
+	dest = joinpath(data_dir, "$(name).mol")
+	isfile(dest) || download(url, dest);
+	return dest
+end
+
+# ╔═╡ e635df3c-bc91-46de-b994-957df3fa54ba
+molfile = fetch_mol!("6437877", "Cefditoren Pivoxil", data_dir)
+
+# ╔═╡ a40b1869-b958-4cec-938b-b156a3dc2f07
+sdfmol = let
+	mol = sdftomol(molfile)
+	remove_hydrogens!(mol)
+	mol
+end
+
+# ╔═╡ a40609e8-2da4-4731-b133-efd75df52c3d
+HTML(drawsvg(sdfmol, 350, 350, atomindex=true))
+
+# ╔═╡ a8bab02a-c863-4a8f-8b57-0398c8ac090b
+typeof(sdfmol)
+
+# ╔═╡ a462e5b5-2978-429b-b3f9-1efa04f2b097
+props(sdfmol, 14)
+
+# ╔═╡ 8a96d876-9914-476d-821c-643788789de6
+props(sdfmol, 15, 40)
+
+# ╔═╡ 202563a2-a0f6-493e-baa4-48b531196daa
+md"
+- SDFile can have Metadata (called 'options'). This is stored at `MolGraph.gprops[:metadata]` and can be accessed by `metadata(mol)`.
+"
+
+# ╔═╡ 0899e5b3-bf52-4063-85d4-07253a86a09c
+metadata(sdfmol)
+
+# ╔═╡ 82984c24-4295-48bf-8358-2d6edaa2a859
+metadata(sdfmol)[:PUBCHEM_COMPOUND_CID]
+
 # ╔═╡ Cell order:
-# ╠═2f76d93c-221d-4c8c-a8ce-5f17b9f15cd1
+# ╟─2f76d93c-221d-4c8c-a8ce-5f17b9f15cd1
 # ╟─51623203-9096-4125-a25b-1d66de219f8a
 # ╟─46afbdfc-8e40-4ef7-8693-8269819d4972
 # ╟─b043d8ae-91b3-402f-a787-bc03d2430610
@@ -269,3 +323,15 @@ props(dictmol, 5)
 # ╠═65798267-827d-404c-9878-57ce76f3492d
 # ╠═511439fb-9ae2-42ab-b13b-450ae67d2ca6
 # ╠═e7ebde94-c38c-46e8-99c5-47944b844832
+# ╟─e73c55d7-4af3-4242-91cd-2520f3aba237
+# ╠═de592d8c-7e8a-4bb5-8f95-5a978045ffa6
+# ╠═f6c2b832-db03-43fd-859f-5e95161f1d5e
+# ╠═e635df3c-bc91-46de-b994-957df3fa54ba
+# ╠═a40b1869-b958-4cec-938b-b156a3dc2f07
+# ╠═a40609e8-2da4-4731-b133-efd75df52c3d
+# ╠═a8bab02a-c863-4a8f-8b57-0398c8ac090b
+# ╠═a462e5b5-2978-429b-b3f9-1efa04f2b097
+# ╠═8a96d876-9914-476d-821c-643788789de6
+# ╟─202563a2-a0f6-493e-baa4-48b531196daa
+# ╠═0899e5b3-bf52-4063-85d4-07253a86a09c
+# ╠═82984c24-4295-48bf-8358-2d6edaa2a859

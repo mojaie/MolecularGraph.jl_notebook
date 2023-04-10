@@ -1,3 +1,4 @@
 [deps]
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
 MolecularGraph = "6c89ec66-9cd8-5372-9f91-fabc50dd27fd"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"

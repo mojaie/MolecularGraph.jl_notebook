@@ -83,10 +83,10 @@ md"
 "
 
 # ╔═╡ b0e885a3-d4d0-4ebb-80fc-15ca29ecb0da
-mol2 = smilestomol("CC(=O)OC1=CC=CC=C1C(=O)O.O.CCO")
+mol2 = smilestomol("CC(=O)OC1=CC=CC=C1C(=O)O.O.CCO"); nothing
 
 # ╔═╡ 45e113f4-17d3-4a43-aa99-68e7a3a76466
-HTML(drawsvg(mol2, 250, 250, atomindex=true))
+html_fixed_size(drawsvg(mol2, atomindex=true), 250, 250)
 
 # ╔═╡ dd7ac9f5-a265-49bc-a4b4-36ec5e44cbad
 connected_components(mol2)
@@ -127,7 +127,7 @@ end
 md"
 ### Dealing with resonance structure
 
-- Substructure match methods in this library compares atom symbols and the number of π electrons, so in many cases you don't have to care about fluctuations in resonance structure.
+- Substructure match methods in this library compares atom symbols and the number of ``\pi`` electrons, so in many cases you don't have to care about fluctuations in resonance structure.
 "
 
 # ╔═╡ 87c7cbf0-b31a-4c08-90b9-8606551c782f

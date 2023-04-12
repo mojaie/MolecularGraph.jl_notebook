@@ -181,7 +181,8 @@ let
 	# matched edges can be obtained from the node-induced subgraph
 	matched_edges = induced_subgraph_edges(mol.graph, matched)
 	# highlight matched vertices and edges 
-	HTML(drawsvg(mol, 300, 300, atomhighlight=matched, bondhighlight=matched_edges))
+	img = drawsvg(mol, atomhighlight=matched, bondhighlight=matched_edges)
+	html_fixed_size(img, 300, 300)
 end
 
 # ╔═╡ 72f4aecb-edee-43fe-943c-c9eb2951d1ab
@@ -200,23 +201,14 @@ cefditoren = let
 	mol = sdftomol(molfile)
 	remove_hydrogens!(mol)
 	mol
-end
+end; nothing
 
 # ╔═╡ 5aae8dc5-a22b-43bb-9439-352928a5a5d8
 ceftazidime = let
 	mol = sdftomol(molfile2)
 	remove_hydrogens!(mol)
 	mol
-end
-
-# ╔═╡ 4665e6f8-f6e1-49a5-8d80-e7dd3c9c605c
-function displayimgpair(img1, img2)
-	# Convenient function to display a pair of mol images
-    HTML("""<div>
-        <div style="float:left">$(img1)</div>
-        <div style="float:left">$(img2)</div>
-    </div>""")
-end
+end; nothing
 
 # ╔═╡ 980a93c5-8d8b-484d-9d63-02abaf53d41f
 let
@@ -226,15 +218,15 @@ let
 	# atoms and bonds highlighting
 	edges1 = collect(keys(result.mapping))
 	nodes1, vmap1 = induced_subgraph(cefditoren.graph, edges1)
-	svg1 = drawsvg(cefditoren, 250, 250,
+	svg1 = drawsvg(cefditoren,
 		atomhighlight=vmap1[vertices(nodes1)], bondhighlight=edges1)
 
 	edges2 = collect(values(result.mapping))
 	nodes2, vmap2 = induced_subgraph(ceftazidime.graph, edges2)
-	svg2 = drawsvg(ceftazidime, 250, 250,
+	svg2 = drawsvg(ceftazidime,
 		atomhighlight=vmap2[vertices(nodes2)], bondhighlight=edges2)
 
-	displayimgpair(svg1, svg2)
+	html_grid([svg1, svg2], 3, 250)
 end
 
 # ╔═╡ a67e3a37-30a8-4ccf-8d1e-31a9d8cec359
@@ -245,15 +237,13 @@ let
 	# atoms and bonds highlighting
 	nodes1 = collect(keys(result.mapping))
 	edges1 = induced_subgraph_edges(cefditoren.graph, nodes1)
-	svg1 = drawsvg(cefditoren, 250, 250,
-		atomhighlight=nodes1, bondhighlight=edges1)
+	svg1 = drawsvg(cefditoren, atomhighlight=nodes1, bondhighlight=edges1)
 
 	nodes2 = collect(values(result.mapping))
 	edges2 = induced_subgraph_edges(ceftazidime.graph, nodes2)
-	svg2 = drawsvg(ceftazidime, 250, 250,
-		atomhighlight=nodes2, bondhighlight=edges2)
+	svg2 = drawsvg(ceftazidime, atomhighlight=nodes2, bondhighlight=edges2)
 
-	displayimgpair(svg1, svg2)
+	html_grid([svg1, svg2], 3, 250)
 end
 
 # ╔═╡ Cell order:
@@ -291,6 +281,5 @@ end
 # ╟─72f4aecb-edee-43fe-943c-c9eb2951d1ab
 # ╠═1e4102f4-e104-4acf-9409-260a37c2146a
 # ╠═5aae8dc5-a22b-43bb-9439-352928a5a5d8
-# ╠═4665e6f8-f6e1-49a5-8d80-e7dd3c9c605c
 # ╠═980a93c5-8d8b-484d-9d63-02abaf53d41f
 # ╠═a67e3a37-30a8-4ccf-8d1e-31a9d8cec359

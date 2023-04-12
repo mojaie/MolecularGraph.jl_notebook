@@ -87,7 +87,7 @@ md"
 "
 
 # ╔═╡ b318a824-68c0-4150-bc4a-fb9894669537
-HTML(drawsvg(mol, 250, 250, atomindex=true))
+html_fixed_size(drawsvg(mol, atomindex=true), 250, 250)
 
 # ╔═╡ 4423c072-0d94-489f-b887-3f4b0413ffa6
 neighbors(mol, 2)
@@ -105,7 +105,7 @@ md"
 let
 	mol = copy(mol)
 	rem_vertex!(mol, 1)
-	HTML(drawsvg(mol, 250, 250, atomindex=true))
+	html_fixed_size(drawsvg(mol, atomindex=true), 250, 250)
 end
 
 # ╔═╡ eac02e96-e076-4c7b-9747-5eb644111ae8
@@ -113,14 +113,14 @@ let
 	mol = copy(mol)
 	vmap = rem_vertices!(mol, [1, 2, 3])  # remove acetyl group
 	println(vmap)
-	HTML(drawsvg(mol, 250, 250, atomindex=true))
+	html_fixed_size(drawsvg(mol, atomindex=true), 250, 250)
 end
 
 # ╔═╡ 3a101d91-6ded-48fe-8153-9f6a0775f300
 let
 	mol = copy(mol)
 	rem_edge!(mol, 2, 4)
-	HTML(drawsvg(mol, 250, 250, atomindex=true))
+	html_fixed_size(drawsvg(mol, atomindex=true), 250, 250)
 end
 
 # ╔═╡ 73e9a08c-2a18-4b83-96e8-45db09ae9dec
@@ -130,10 +130,10 @@ disconn = let
 	add_vertex!(mol, SMILESAtom(:Cl))
 	add_edge!(mol, 2, 14, SMILESBond())
 	mol
-end
+end; nothing
 
 # ╔═╡ 353b1a6b-0e3c-4d58-b57c-c20b557b4412
-HTML(drawsvg(disconn, 250, 250, atomindex=true))
+html_fixed_size(drawsvg(disconn, atomindex=true), 250, 250)
 
 # ╔═╡ 9a87a719-c922-4f79-848f-b3b692523d3e
 md"
@@ -186,7 +186,7 @@ md"
 "
 
 # ╔═╡ 1308a00c-9630-4fdd-90c3-c7a81689e28a
-HTML(drawsvg(mol, 250, 250, atomindex=true))
+html_fixed_size(drawsvg(mol, atomindex=true), 250, 250)
 
 # ╔═╡ 77c4fe70-97d4-449c-bf96-eb4146af4bdb
 props(mol, 5)
@@ -218,10 +218,10 @@ md"
 "
 
 # ╔═╡ 65798267-827d-404c-9878-57ce76f3492d
-dictmol = smilestomol(MolGraph{Int64, Dict{Symbol,Any}, Dict{Symbol,Any}}, "CC(=O)OC1=CC=CC=C1C(=O)O")
+dictmol = smilestomol(MolGraph{Int64, Dict{Symbol,Any}, Dict{Symbol,Any}}, "CC(=O)OC1=CC=CC=C1C(=O)O"); nothing
 
 # ╔═╡ 511439fb-9ae2-42ab-b13b-450ae67d2ca6
-HTML(drawsvg(dictmol, 250, 250, atomindex=true))
+html_fixed_size(drawsvg(dictmol, atomindex=true), 250, 250)
 
 # ╔═╡ e7ebde94-c38c-46e8-99c5-47944b844832
 props(dictmol, 5)
@@ -255,10 +255,10 @@ sdfmol = let
 	mol = sdftomol(molfile)
 	remove_hydrogens!(mol)
 	mol
-end
+end; nothing
 
 # ╔═╡ a40609e8-2da4-4731-b133-efd75df52c3d
-HTML(drawsvg(sdfmol, 350, 350, atomindex=true))
+html_fixed_size(drawsvg(sdfmol, atomindex=true), 350, 350)
 
 # ╔═╡ a8bab02a-c863-4a8f-8b57-0398c8ac090b
 typeof(sdfmol)

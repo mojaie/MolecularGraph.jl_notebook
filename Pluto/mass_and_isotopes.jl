@@ -104,17 +104,14 @@ According to the isotopic composition, simulated mass spectrum can be plotted by
 # ╔═╡ e5760dc0-3c6d-44e4-9612-611f65de87e8
 let
 	mol = smilestomol("c1cc(ccc1[C@H]([C@@H](CO)NC(=O)C(Cl)Cl)O)[N+](=O)[O-]")
-	structure = drawsvg(mol, 200, 200)
+	structure = drawsvg(mol)
 	data = simulate_massspec(mol)
 	p = plot(data[:, 1], data[:, 2], size=(320, 240), leg=false, xlabel = "Mass", ylabel = "Intensity")
 	buf = IOBuffer()
 	show(buf, MIME("image/svg+xml"), p)
 	spectrum = String(take!(buf))
 	close(buf)
-	HTML("""<div>
-        <div style="float:left">$(structure)</div>
-        <div style="float:left">$(spectrum)</div>
-    </div>""")
+	html_grid([structure, spectrum], 2, 250)
 end
 
 # ╔═╡ Cell order:

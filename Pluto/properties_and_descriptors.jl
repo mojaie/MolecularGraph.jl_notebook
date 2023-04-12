@@ -104,32 +104,38 @@ The following methods return a vector of atom properties in index order
 - `hybridization(mol)`: orbital hybridization e.g. sp, sp2 and sp3
 "
 
+# ╔═╡ d99b6367-407f-416f-8291-fa5c5ed2fe63
+paraquat = smilestomol("C[n+]1ccc(cc1)c2cc[n+](cc2)C.[Cl-].[Cl-]"); nothing
+
+# ╔═╡ 3a7ebebe-317a-4a63-b90c-05d0dcb040b3
+html_fixed_size(drawsvg(paraquat, atomindex=true), 250, 250)
+
 # ╔═╡ 419e9f72-c528-4f57-afb2-ff079d5ac494
-atom_symbol(mol)
+atom_symbol(paraquat)
 
 # ╔═╡ bc4319e7-a247-4b46-bfee-baf8f1431d27
-charge(mol)
+charge(paraquat)
 
 # ╔═╡ 0ffeba60-457c-437b-8160-a5987ec384a6
-multiplicity(mol)
+multiplicity(paraquat)
 
 # ╔═╡ 354eebcc-703c-45e9-9f12-8713fd0c3885
-lone_pair(mol)
+lone_pair(paraquat)
 
 # ╔═╡ 8eef6837-08f2-4687-b030-c64d3cca3975
-implicit_hydrogens(mol)
+implicit_hydrogens(paraquat)
 
 # ╔═╡ 336054f9-e727-40a2-93c6-d5156458433d
-valence(mol)
+valence(paraquat)
 
 # ╔═╡ b50eee82-7c09-4ea6-942d-7252906e21b4
-is_aromatic(mol)
+is_aromatic(paraquat)
 
 # ╔═╡ 52258140-e642-4d8a-9ab0-ebdf6898fdd8
-pi_electron(mol)
+pi_electron(paraquat)
 
 # ╔═╡ eae0ed0f-9723-4304-bfe5-87efca6b7ec5
-hybridization(mol)
+hybridization(paraquat)
 
 # ╔═╡ 110a2830-af9a-4bb7-b60f-c7eaae1e3461
 md"
@@ -140,14 +146,23 @@ The following methods return a vector of bond properties in lexicographic order 
 - `is_rotatable(mol)`: whether the bond is rotatable or not
 "
 
+# ╔═╡ 4c1f78cc-7857-4064-b06a-19bffc9cb998
+fluconazole = smilestomol("OC(Cn1cncn1)(Cn1cncn1)c1ccc(F)cc1F"); nothing
+
+# ╔═╡ f7db2201-04a7-40a9-92a4-c41971c7888c
+html_fixed_size(drawsvg(fluconazole, atomindex=true), 250, 250)
+
 # ╔═╡ b53afd5e-d5b8-4f51-b52f-f07cb82ceb6e
-bond_order(mol)
+bond_order(fluconazole)
 
 # ╔═╡ 6a4c75f9-6441-4477-bb70-f1f431701166
-is_edge_aromatic(mol)
+is_edge_aromatic(fluconazole)
 
 # ╔═╡ bc130afe-a9af-40ba-bc12-d64295a30350
-is_rotatable(mol)
+is_rotatable(fluconazole)
+
+# ╔═╡ c0e41581-7d3e-448d-99cc-6df8141b586a
+is_rotatable(fluconazole)[edge_rank(fluconazole, 2, 9)]
 
 # ╔═╡ 1223eb64-69d2-4d42-9fa8-43ca9123993d
 md"
@@ -160,17 +175,23 @@ md"
 
 "
 
+# ╔═╡ 892b2441-0cd4-4640-886c-b9ab73381496
+stannsoporfin = smilestomol(raw"[Cl-].[Cl-].[Sn+4].CCC1=C2[N-]C(C=C3N=C(C=C4[N-]C(=CC5=NC(=C2)C(C)=C5CC)C(C)=C4CCC(O)=O)C(CCC(O)=O)=C3C)=C1C"); nothing
+
+# ╔═╡ ebc5f457-782f-41b2-b4a3-900c745c9937
+html_fixed_size(drawsvg(stannsoporfin, atomindex=true), 300, 300)
+
 # ╔═╡ 31286a95-9df9-4604-9aa1-692f6643cdb2
-sssr(mol)
+sssr(stannsoporfin)
 
 # ╔═╡ 49194431-58a9-4579-ab99-2e737319fb5d
-degree(mol)
+degree(stannsoporfin)
 
 # ╔═╡ e5ec8f5d-6c76-4e67-8618-749f171772b7
-connected_components(mol)
+connected_components(stannsoporfin)
 
 # ╔═╡ 3c7c2152-5739-4e11-8106-983928b32599
-fused_rings(mol)
+fused_rings(stannsoporfin)
 
 # ╔═╡ a14b158a-5cee-44a1-bedc-4fbce52a67a3
 md"
@@ -206,7 +227,7 @@ If primary properties or graph topology were changed (e.g. remove vertices), the
 "
 
 # ╔═╡ 684c7188-6e78-44d1-819c-acaf599b229b
-HTML(drawsvg(mol, 250, 250, atomindex=true))
+html_fixed_size(drawsvg(mol, atomindex=true), 250, 250)
 
 # ╔═╡ 37916b47-b446-4658-bf28-9f91e540e39e
 is_aromatic(mol)
@@ -219,7 +240,7 @@ let
 end
 
 # ╔═╡ Cell order:
-# ╠═7df34918-d68f-11ed-0191-6b281f9c8a5f
+# ╟─7df34918-d68f-11ed-0191-6b281f9c8a5f
 # ╠═10155c71-76c5-4e13-bce0-18cbdee039cd
 # ╟─b1d563c7-a3ee-4563-93cb-cf1cfd4fca14
 # ╟─f6e1c81f-04f4-4250-b980-b2a730586dbf
@@ -234,6 +255,8 @@ end
 # ╠═f4004c63-168a-4a82-a4a6-2a75a14eb332
 # ╠═38a72c37-c180-4a2d-a19b-103dda1ce80e
 # ╟─6261f0a7-997b-4444-8286-b59c0325e6bc
+# ╠═d99b6367-407f-416f-8291-fa5c5ed2fe63
+# ╠═3a7ebebe-317a-4a63-b90c-05d0dcb040b3
 # ╠═419e9f72-c528-4f57-afb2-ff079d5ac494
 # ╠═bc4319e7-a247-4b46-bfee-baf8f1431d27
 # ╠═0ffeba60-457c-437b-8160-a5987ec384a6
@@ -244,10 +267,15 @@ end
 # ╠═52258140-e642-4d8a-9ab0-ebdf6898fdd8
 # ╠═eae0ed0f-9723-4304-bfe5-87efca6b7ec5
 # ╟─110a2830-af9a-4bb7-b60f-c7eaae1e3461
+# ╠═4c1f78cc-7857-4064-b06a-19bffc9cb998
+# ╠═f7db2201-04a7-40a9-92a4-c41971c7888c
 # ╠═b53afd5e-d5b8-4f51-b52f-f07cb82ceb6e
 # ╠═6a4c75f9-6441-4477-bb70-f1f431701166
 # ╠═bc130afe-a9af-40ba-bc12-d64295a30350
-# ╠═1223eb64-69d2-4d42-9fa8-43ca9123993d
+# ╠═c0e41581-7d3e-448d-99cc-6df8141b586a
+# ╟─1223eb64-69d2-4d42-9fa8-43ca9123993d
+# ╠═892b2441-0cd4-4640-886c-b9ab73381496
+# ╠═ebc5f457-782f-41b2-b4a3-900c745c9937
 # ╠═31286a95-9df9-4604-9aa1-692f6643cdb2
 # ╠═49194431-58a9-4579-ab99-2e737319fb5d
 # ╠═e5ec8f5d-6c76-4e67-8618-749f171772b7

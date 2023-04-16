@@ -32,9 +32,9 @@ To run codes in your environment, see `Edit or run this notebook` instruction sh
   - Substructure match
   - InChI and InChIKey
   - SMARTS query
+  - Structural alerts (e.g. PAINS)
   - Functional group analysis
-  - Structural alert (e.g. PAINS)
-  - Query containment (experimental)
+  - Query containment
 - [Maximum common substructure (MCS)](https://mojaie.github.io/MolecularGraph.jl_notebook/maximum_common_substructure.jl.html)
   - Maximum common induced substructure (MCIS)
   - Maximum common edge-induced substructure (MCES)
@@ -43,7 +43,8 @@ To run codes in your environment, see `Edit or run this notebook` instruction sh
   - Topological constraint (tdMCS)
 - [Drawing molecule](https://mojaie.github.io/MolecularGraph.jl_notebook/drawing_molecule.jl.html)
   - Settings of 2D structure images
-  - Layout for web and Pluto notebook
+    - Change image size
+    - Layout for web and Pluto notebook
   - Regenerate 2D coordinates
   - 3D molecule rendering using Makie.jl
 

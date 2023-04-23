@@ -4,25 +4,23 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ afe097a1-6ae9-4c66-90f5-38707ae0c29c
+# ╔═╡ 3e80c168-e15d-11ed-1c4a-a165d912289d
 using Graphs, MolecularGraph
 
-# ╔═╡ 2f76d93c-221d-4c8c-a8ce-5f17b9f15cd1
+# ╔═╡ 5b798ec7-bcde-48a1-b917-e3167155c869
 md"
-# Drawing molecules
+# Stereochemistry
 
 MolecularGraph.jl version: 0.14.0
 
-This tutorial deals with 2D/3D rendering of molecules.
+This tutorial includes following functionalities in stereochemistry.
 
-- Settings of 2D structure images
-  - Change image size
-  - Layout for web and Pluto notebook
-- Regenerate 2D coordinates
-- 3D molecule rendering using Makie.jl
+- Stereochemistry as a molecular graph property
+- Stereospecific implicit hydrogens
+- Limitations
 "
 
-# ╔═╡ d761d4ef-6d37-4382-ba4e-3dcbae4feced
+# ╔═╡ 2bb25821-e208-4442-b32c-93ba2c18a09a
 data_dir = let
 	# Create data directory
 	data_dir = "_data"
@@ -30,7 +28,7 @@ data_dir = let
 	data_dir
 end
 
-# ╔═╡ 9d12e251-852d-431d-be4e-5a5314375dda
+# ╔═╡ 91a7a3ed-10c6-4e4a-b92d-70ff49d5fef0
 function fetch_mol!(cid, name, datadir)
 	url = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/$(cid)/SDF"
 	dest = joinpath(data_dir, "$(name).mol")
@@ -38,81 +36,96 @@ function fetch_mol!(cid, name, datadir)
 	return dest
 end
 
-# ╔═╡ c15a6692-08ee-4d6d-94e6-09800b78ab36
+# ╔═╡ 0c175076-ff09-42a8-b1a3-f3ae2ec0b647
 md"
-### Settings of 2D structure images
+### Stereochemistry as a molecular graph property
 
-##### Change image size
-
-1. Generate a SVG image by `drawsvg(mol)`
-1. Use `html_fixed_size(mol, width, height)` to display it
-
-- The default output of the molecule object in Pluto notebook is `html_fixed_size(drawsvg(mol), 250, 250)`, which displays the SVG image of the molecule with a width of 250px and a height of 250px.
+- Stereochemistry properties are often held as a primary property of vertices and edges in chemical data formats such as SDFile and SMILES.
+- Stereochemistry is an interesting property in the context of graph theory. Despite being a property about topology, it cannot be reprecented as a general simple graph. In order to handle such stereochemistry features, `MolGraph` can have stereochemistry information objects in its `gprops` field.
 "
 
-# ╔═╡ 4c65fa4a-061c-4aff-bdaa-bd7e922c6972
-mol = let
-	molfile = fetch_mol!("6437877", "Cefditoren Pivoxil", data_dir)
+# ╔═╡ 3c49c556-e608-4281-b862-8d5a38eb6d82
+tsa = smilestomol(raw"O=C(NO)\C=C\C(=C\[C@H](C(=O)c1ccc(N(C)C)cc1)C)C");nothing
+
+# ╔═╡ 4d039b56-35ce-4113-8396-e0e81c21dec6
+html_fixed_size(drawsvg(tsa, atomindex=true), 250, 250)
+
+# ╔═╡ 984e75be-732e-4d39-afc8-084ceade2364
+tsa.gprops[:stereocenter]  # center => (look_from, vertex1, vertex2, is_clockwise)
+
+# ╔═╡ c2214210-8e01-4307-9336-f17a374b8472
+tsa.gprops[:stereobond]  # bond => (vertex1, vertex2, is_cis)
+
+# ╔═╡ b9a8ff80-1375-4339-bdfe-a172d86643cf
+md"
+### Stereospecific implicit hydrogens
+
+- Hydrogen nodes attached to the stereocenter can be safely removed with `remove_stereo_hydrogen!(mol, center, hydrogen)` or `remove_all_hydrogens(mol)`.
+"
+
+# ╔═╡ 92c12635-35e1-4149-845d-3d72de7b1bec
+molfile = fetch_mol!("5757", "Estradiol", data_dir)
+
+# ╔═╡ d5647ae3-f41b-4ed9-b970-49570331d963
+mol1 = let
 	mol = sdftomol(molfile)
 	remove_hydrogens!(mol)
 	mol
 end; nothing
 
-# ╔═╡ 794a3d10-609f-4e50-9e76-08cb6c07cdcc
-html_fixed_size(drawsvg(mol), 400, 400)
+# ╔═╡ 7a45bb96-3f06-436c-a558-7eb49866c7a3
+html_fixed_size(drawsvg(mol1, atomindex=true), 250, 250)
 
-# ╔═╡ eb399948-2ff1-47a3-8fc6-b44a440876e7
+# ╔═╡ 4a37a78e-271a-45ef-b3f4-329bfa0d40bb
+inchikey(mol1)
+
+# ╔═╡ beb956d1-e37d-44d8-bfd8-664c28893e98
+mol2 = let
+	mol = sdftomol(molfile)
+	remove_all_hydrogens!(mol)
+	mol
+end; nothing
+
+# ╔═╡ ac76dbbb-1823-4ad4-ad07-dcc246c0ea34
+html_fixed_size(drawsvg(mol2, atomindex=true), 250, 250)
+
+# ╔═╡ 6b08581f-cb26-43a5-8cdc-bfe9d0b217f4
+inchikey(mol2)
+
+# ╔═╡ 3101dfa2-a61c-4a33-b77d-3b118c897e61
 md"
-##### Layout for web and Pluto notebook
-
-- The default output of the vector of molecule objects in Pluto notebook is `html_grid(drawsvg.(mols), 3, 250))`, which displays the SVG images of the molecules in a 3-column grid with a row height of 250px. The width is determined accorting to the HTML parent objects.
+- The 2D rendering above is a bit weird, but the stereochemistry information is preserved and InChIKey is generated correctly.
+- To give hydrogens back to the molecule, simply add hydrogen nodes as follows. SDFile writer will do this automatically.
 "
 
-# ╔═╡ 384d0cd4-7d12-49f5-a432-2e472664ee55
-mols = [
-	smilestomol(raw"O=S(=O)(N)c1c(Cl)cc(c(C(=O)O)c1)NCc2occc2"),
-	smilestomol(raw"CCC(CC)OC1C=C(CC(C1NC(=O)C)N)C(=O)OCC"),
-	smilestomol(raw"O=C([C@H](CCC(O)=O)NC(C1=CC=C(N(CC2=CN=C(N=C(N)N=C3N)C3=N2)C)C=C1)=O)O"),
-	smilestomol(raw"O=C2\N=C(/OC2c1ccccc1)N"),
-	smilestomol(raw"O(CCN(C)C)C(c1ccccc1)c2ccccc2"),
-	smilestomol(raw"C[C@@H]1C[C@H]2[C@@H](C[C@H]3[C@H](O2)[C@H]([C@@H]([C@H]4[C@H](O3)[C@H]([C@@H]([C@]5(O4)C[C@@H](CO5)O)C)C)O)C)O[C@H]6C[C@@H]7[C@]([C@@H](C[C@@H]8[C@@H](O7)C/C=C\C[C@@H]9[C@@H](O8)C=C[C@@H]2[C@@H](O9)C=C[C@@H]3[C@@H](O2)C[C@@H]2[C@@H](O3)[C@@H]([C@@H]3[C@@H](O2)CC=C[C@@H](O3)/C=C/[C@@H](CO)O)O)O)(O[C@@H]6C1)C")
-]
+# ╔═╡ b2cb33ce-0b09-40d9-bfeb-43fd23b76543
+let
+	mol = copy(mol2)
+	ringcount = ring_count(mol)
+	for center in keys(get_prop(mol, :stereocenter))
+        if degree(mol, center) == 3 && ringcount[center] > 1
+            add_vertex!(mol, vproptype(mol)(:H))
+            add_edge!(mol, center, nv(mol), eproptype(mol)())
+        end
+    end
+	html_fixed_size(drawsvg(mol, atomindex=true), 250, 250)
+end
 
-# ╔═╡ b2cd3c97-7a5a-48eb-a412-83ed1c8080e3
-html_grid(drawsvg.(mols), 4, 200)
+# ╔═╡ ee32025b-ab7b-4020-88ff-b3e30737cb29
+let
+	mol = sdftomol(molfile)
+	remove_all_hydrogens!(mol)
+	dump = printv2mol(mol)
+	mol = sdftomol(IOBuffer(dump))
+	inchikey(mol)
+end
 
-# ╔═╡ 3a762797-f60c-44cf-848b-4b8386aad162
+# ╔═╡ 4d3a20cb-8d05-4da7-bd99-8ce918aa7cd0
 md"
-### Regenerate 2D coordinates
+### Limitations
 
-As SMILES does not have coordinates of atoms, so the 2D coordinates will be generated when smilestomol is called. Internally `MolecularGraph` uses Schrodinger's coordgenlibs ([https://github.com/schrodinger/coordgenlibs](https://github.com/schrodinger/coordgenlibs)) for 2D coords generation.
-"
-
-# ╔═╡ 69d8f6fa-d518-49a8-b802-466ce2750062
-smol = smilestomol(raw"O=C3N2/C(=C(/C=C\c1scnc1C)CS[C@@H]2[C@@H]3NC(=O)C(=N\OC)/c4nc(sc4)N)C(=O)O"); nothing
-
-# ╔═╡ ab3d6fef-79f0-4458-a5b0-68f774733e55
-html_fixed_size(drawsvg(smol, atomindex=true), 250, 250)
-
-# ╔═╡ ec4cfaff-0cb2-4e9a-bf8f-a487b9fcc0ac
-md"
-- `coordgen!` also works with molecules from SDFile. This means you can recalculate 2D coordinate of that after molecular graph modification.
-"
-
-# ╔═╡ 4708cf8b-15b6-4769-92ec-a3b165b42f3b
-md"
-### 3D molecule rendering using Makie.jl
-
-- To generate 3D molecular image, Makie.jl recipes `spacefilling` and `ballstick` are implemented.
-- Makie recipes require one of the Makie backends to be installed. If GLMakie is installed, the code would be like the following.
-
-```julia
-using MolecularGraph
-using GLMakie
-mol = sdfmol(SDF_3D_FILE_PATH)
-spacefilling(mol)
-ballstick(mol)
-```
+- As the stereochemistry can be affected by changing adjacent vertices and edges, such operations that can alter graph topology of molecules which has stereochemistry should be avoided (except for removal of hydrogen nodes shown above).
+- Interconversion of stereochemical data and 2D coordinates generation still have many challenges.
 "
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -573,20 +586,26 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─2f76d93c-221d-4c8c-a8ce-5f17b9f15cd1
-# ╠═afe097a1-6ae9-4c66-90f5-38707ae0c29c
-# ╠═d761d4ef-6d37-4382-ba4e-3dcbae4feced
-# ╠═9d12e251-852d-431d-be4e-5a5314375dda
-# ╟─c15a6692-08ee-4d6d-94e6-09800b78ab36
-# ╠═4c65fa4a-061c-4aff-bdaa-bd7e922c6972
-# ╠═794a3d10-609f-4e50-9e76-08cb6c07cdcc
-# ╟─eb399948-2ff1-47a3-8fc6-b44a440876e7
-# ╠═384d0cd4-7d12-49f5-a432-2e472664ee55
-# ╠═b2cd3c97-7a5a-48eb-a412-83ed1c8080e3
-# ╟─3a762797-f60c-44cf-848b-4b8386aad162
-# ╠═69d8f6fa-d518-49a8-b802-466ce2750062
-# ╠═ab3d6fef-79f0-4458-a5b0-68f774733e55
-# ╟─ec4cfaff-0cb2-4e9a-bf8f-a487b9fcc0ac
-# ╟─4708cf8b-15b6-4769-92ec-a3b165b42f3b
+# ╟─5b798ec7-bcde-48a1-b917-e3167155c869
+# ╠═3e80c168-e15d-11ed-1c4a-a165d912289d
+# ╠═2bb25821-e208-4442-b32c-93ba2c18a09a
+# ╠═91a7a3ed-10c6-4e4a-b92d-70ff49d5fef0
+# ╟─0c175076-ff09-42a8-b1a3-f3ae2ec0b647
+# ╠═3c49c556-e608-4281-b862-8d5a38eb6d82
+# ╠═4d039b56-35ce-4113-8396-e0e81c21dec6
+# ╠═984e75be-732e-4d39-afc8-084ceade2364
+# ╠═c2214210-8e01-4307-9336-f17a374b8472
+# ╟─b9a8ff80-1375-4339-bdfe-a172d86643cf
+# ╠═92c12635-35e1-4149-845d-3d72de7b1bec
+# ╠═d5647ae3-f41b-4ed9-b970-49570331d963
+# ╠═7a45bb96-3f06-436c-a558-7eb49866c7a3
+# ╠═4a37a78e-271a-45ef-b3f4-329bfa0d40bb
+# ╠═beb956d1-e37d-44d8-bfd8-664c28893e98
+# ╠═ac76dbbb-1823-4ad4-ad07-dcc246c0ea34
+# ╠═6b08581f-cb26-43a5-8cdc-bfe9d0b217f4
+# ╟─3101dfa2-a61c-4a33-b77d-3b118c897e61
+# ╠═b2cb33ce-0b09-40d9-bfeb-43fd23b76543
+# ╠═ee32025b-ab7b-4020-88ff-b3e30737cb29
+# ╟─4d3a20cb-8d05-4da7-bd99-8ce918aa7cd0
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

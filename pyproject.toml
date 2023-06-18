@@ -8,6 +8,7 @@ authors = ["smatsuoka <ms0ae8ti1sj2ui@gmail.com>"]
 python = "^3.8"
 jupyter = "^1.0.0"
 jupytext = "^1.5.1"
+rdkit = "^2023.3.1"
 
 [tool.poetry.dev-dependencies]
 

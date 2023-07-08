@@ -1,12 +1,11 @@
 ### A Pluto.jl notebook ###
-# v0.19.22
+# v0.19.26
 
 using Markdown
 using InteractiveUtils
 
 # ╔═╡ 8b4b7b1a-8f77-4917-b55c-3f32ddd3bb4f
 using Graphs, MolecularGraph
-
 
 # ╔═╡ 4954986d-31e0-40f1-aa2a-33cca57273b4
 using Profile
@@ -15,7 +14,7 @@ using Profile
 md"
 # Maximum common substructure
 
-MolecularGraph.jl version: 0.14.0
+MolecularGraph.jl version: 0.15.1
 
 MolecularGraph.js implements following essential maximum common substructure (MCS) methods for cheminformatics applications.
 
@@ -48,9 +47,9 @@ md"
 
 - `disconnected_mcis(mol1, mol2)` calculates maximum common induced (node-induced) substructure (MCIS).
 - 'induced' (or specifically 'node-induced') means that the subgraph is defined by a subset of the vertices of the original graph, and the presence or absence of edges between all vertices of the subgraph must match that of the original graph. That also means there is at least one vertex mapping (injection) from the subgraph to the original graph.
-- MCS methods in this tutorial returns a `MCSResult` type object.
-  - `MCSResult.mapping` is a mapping of vertex indices between two molecules.
-  - `MCSResult.status` shows the calculation status. `:done` means that the calculation was successfully finished.
+- MCS methods in this library returns a result in `Tuple{Dict,Symbol}`.
+  - the first element is a mapping of vertex indices between two molecules.
+  - the second element is the calculation status. `:done` means that the calculation was successfully finished.
 - Unlike substructure match, `MCSResult` have only one of the largest vertex mapping. This is because of the high computational cost of MCS calculation as described below.
 - Like substructure match, MCS calculation considers the match between of the atom symbol and the number of pi electron on the atom (not the bond order). This is why the nitrogen atom in the following example does not match (N adjacent to multiple or aromatic bond is treated as sp2 in the default descriptor function).
 "
@@ -70,17 +69,17 @@ aminocoumarin = let
 end; nothing
 
 # ╔═╡ 8b645955-b2ce-4b2a-9793-18a1612e2a75
-mcis_result = disconnected_mcis(ldopa, aminocoumarin)
+mcis_result, mcis_status = disconnected_mcis(ldopa, aminocoumarin)
 
 # ╔═╡ 7b38cdb4-7afd-4957-b6d3-116b4bd90d96
 let
-	nodes1 = collect(keys(mcis_result.mapping))
+	nodes1 = collect(keys(mcis_result))
 	# induce MCS edges from the vertex mapping
 	edges1 = induced_subgraph_edges(ldopa.graph, nodes1)
 	svg1 = drawsvg(ldopa,
 		atomhighlight=nodes1, bondhighlight=edges1, atomindex=true)
 
-	nodes2 = collect(values(mcis_result.mapping))
+	nodes2 = collect(values(mcis_result))
 	edges2 = induced_subgraph_edges(aminocoumarin.graph, nodes2)
 	svg2 = drawsvg(aminocoumarin,
 		atomhighlight=nodes2, bondhighlight=edges2, atomindex=true)
@@ -98,17 +97,17 @@ md"
 "
 
 # ╔═╡ 8ac8565c-1f9e-42e7-a90d-705971864955
-mces_result = disconnected_mces(ldopa, aminocoumarin)
+mces_result, mces_status = disconnected_mces(ldopa, aminocoumarin)
 
 # ╔═╡ 0fbaefff-78f8-4b27-aaf4-b951fe975df2
 let
-	edges1 = collect(keys(mces_result.mapping))
+	edges1 = collect(keys(mces_result))
 	# induce MCS nodes from the edge mapping
 	nodes1, vmap1 = induced_subgraph(ldopa.graph, edges1)
 	svg1 = drawsvg(ldopa,
 		atomhighlight=vmap1[vertices(nodes1)], bondhighlight=edges1, atomindex=true)
 
-	edges2 = collect(values(mces_result.mapping))
+	edges2 = collect(values(mces_result))
 	nodes2, vmap2 = induced_subgraph(aminocoumarin.graph, edges2)
 	svg2 = drawsvg(aminocoumarin,
 		atomhighlight=vmap2[vertices(nodes2)], bondhighlight=edges2, atomindex=true)
@@ -126,16 +125,16 @@ md"
 "
 
 # ╔═╡ 0fb4d717-6422-4e1b-a345-a5841d164d9f
-conn_mcis_result = connected_mcis(ldopa, aminocoumarin)
+conn_mcis_result, conn_mcis_status = connected_mcis(ldopa, aminocoumarin)
 
 # ╔═╡ a0ae8cb9-a5b7-4e8d-834b-3bea0bbcc9de
 let
-	nodes1 = collect(keys(conn_mcis_result.mapping))
+	nodes1 = collect(keys(conn_mcis_result))
 	edges1 = induced_subgraph_edges(ldopa.graph, nodes1)
 	svg1 = drawsvg(ldopa,
 		atomhighlight=nodes1, bondhighlight=edges1, atomindex=true)
 
-	nodes2 = collect(values(conn_mcis_result.mapping))
+	nodes2 = collect(values(conn_mcis_result))
 	edges2 = induced_subgraph_edges(aminocoumarin.graph, nodes2)
 	svg2 = drawsvg(aminocoumarin,
 		atomhighlight=nodes2, bondhighlight=edges2, atomindex=true)
@@ -144,16 +143,16 @@ let
 end
 
 # ╔═╡ 8b4b896d-f6e7-427c-84f5-0bcc44eb5fc9
-conn_mces_result = connected_mces(ldopa, aminocoumarin)
+conn_mces_result, conn_mces_status = connected_mces(ldopa, aminocoumarin)
 
 # ╔═╡ 2cdd67cb-35d0-4bab-b8b9-5ce37552398e
 let
-	edges1 = collect(keys(conn_mces_result.mapping))
+	edges1 = collect(keys(conn_mces_result))
 	nodes1, vmap1 = induced_subgraph(ldopa.graph, edges1)
 	svg1 = drawsvg(ldopa,
 		atomhighlight=vmap1[vertices(nodes1)], bondhighlight=edges1, atomindex=true)
 
-	edges2 = collect(values(conn_mces_result.mapping))
+	edges2 = collect(values(conn_mces_result))
 	nodes2, vmap2 = induced_subgraph(aminocoumarin.graph, edges2)
 	svg2 = drawsvg(aminocoumarin,
 		atomhighlight=vmap2[vertices(nodes2)], bondhighlight=edges2, atomindex=true)
@@ -183,7 +182,7 @@ ceftazidime = let
 end; nothing
 
 # ╔═╡ 0689eeb0-ab08-47e4-b163-68d907eb8490
-larger_mces = disconnected_mces(cefditoren, ceftazidime, timeout=10)
+larger_mces, larger_mces_status = disconnected_mces(cefditoren, ceftazidime, timeout=10)
 
 # ╔═╡ 268f7f7c-ae48-4b4a-898e-56f9aa893c46
 md"
@@ -193,12 +192,12 @@ md"
 
 # ╔═╡ fd1152c8-cbb4-4f92-aa5a-0d01d483df75
 let
-	edges1 = collect(keys(larger_mces.mapping))
+	edges1 = collect(keys(larger_mces))
 	nodes1, vmap1 = induced_subgraph(cefditoren.graph, edges1)
 	svg1 = drawsvg(cefditoren,
 		atomhighlight=vmap1[vertices(nodes1)], bondhighlight=edges1)
 
-	edges2 = collect(values(larger_mces.mapping))
+	edges2 = collect(values(larger_mces))
 	nodes2, vmap2 = induced_subgraph(ceftazidime.graph, edges2)
 	svg2 = drawsvg(ceftazidime,
 		atomhighlight=vmap2[vertices(nodes2)], bondhighlight=edges2)
@@ -214,21 +213,21 @@ end
 
 # ╔═╡ 43b2240e-5c85-4b4e-8a3c-9c361b188f8d
 md"
-- The most costful call was `find_cliques` which yields maximal cliques. Maximum clique detection problem is known to be NP-hard. 
+- The most costful call was `maximum_clique` which yields maximal cliques. Maximum clique detection problem is known to be NP-hard. 
 - Connected MCS is far faster than disconnected MCS.
 "
 
 # ╔═╡ 22766969-41f0-44c2-974f-1650e91e4fb1
-larger_conn_mces = connected_mces(cefditoren, ceftazidime, timeout=10)
+larger_conn_mces, larger_conn_mces_status = connected_mces(cefditoren, ceftazidime, timeout=10)
 
 # ╔═╡ f0d09a83-1e9b-40bf-b83f-fc6855929f73
 let
-	edges1 = collect(keys(larger_conn_mces.mapping))
+	edges1 = collect(keys(larger_conn_mces))
 	nodes1, vmap1 = induced_subgraph(cefditoren.graph, edges1)
 	svg1 = drawsvg(cefditoren,
 		atomhighlight=vmap1[vertices(nodes1)], bondhighlight=edges1)
 
-	edges2 = collect(values(larger_conn_mces.mapping))
+	edges2 = collect(values(larger_conn_mces))
 	nodes2, vmap2 = induced_subgraph(ceftazidime.graph, edges2)
 	svg2 = drawsvg(ceftazidime,
 		atomhighlight=vmap2[vertices(nodes2)], bondhighlight=edges2)
@@ -242,16 +241,16 @@ md"
 "
 
 # ╔═╡ 8ac75243-2817-4df4-aad6-3cbf29dc098b
-targeted_mces = disconnected_mces(cefditoren, ceftazidime, targetsize=15)
+targeted_mces, targeted_mces_status = disconnected_mces(cefditoren, ceftazidime, targetsize=15)
 
 # ╔═╡ 3a4689f2-78fe-4f87-b31c-724a903984e8
 let
-	edges1 = collect(keys(targeted_mces.mapping))
+	edges1 = collect(keys(targeted_mces))
 	nodes1, vmap1 = induced_subgraph(cefditoren.graph, edges1)
 	svg1 = drawsvg(cefditoren,
 		atomhighlight=vmap1[vertices(nodes1)], bondhighlight=edges1)
 
-	edges2 = collect(values(targeted_mces.mapping))
+	edges2 = collect(values(targeted_mces))
 	nodes2, vmap2 = induced_subgraph(ceftazidime.graph, edges2)
 	svg2 = drawsvg(ceftazidime,
 		atomhighlight=vmap2[vertices(nodes2)], bondhighlight=edges2)
@@ -272,16 +271,16 @@ md"
 "
 
 # ╔═╡ 53441110-c544-403e-8bc7-dd1302470ec8
-tcmces_result = tcmces(cefditoren, ceftazidime, tolerance=1)
+tdmces_result, tdmces_status = tdmces(cefditoren, ceftazidime, tolerance=1)
 
 # ╔═╡ e5ddd0a1-bf60-49ad-909f-1b91cf09cc46
 let
-	edges1 = collect(keys(tcmces_result.mapping))
+	edges1 = collect(keys(tdmces_result))
 	nodes1, vmap1 = induced_subgraph(cefditoren.graph, edges1)
 	svg1 = drawsvg(cefditoren,
 		atomhighlight=vmap1[vertices(nodes1)], bondhighlight=edges1)
 
-	edges2 = collect(values(tcmces_result.mapping))
+	edges2 = collect(values(tdmces_result))
 	nodes2, vmap2 = induced_subgraph(ceftazidime.graph, edges2)
 	svg2 = drawsvg(ceftazidime,
 		atomhighlight=vmap2[vertices(nodes2)], bondhighlight=edges2)
@@ -298,22 +297,26 @@ Profile = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [compat]
 Graphs = "~1.8.0"
-MolecularGraph = "~0.14.0"
+MolecularGraph = "~0.15.1"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.2"
+julia_version = "1.9.1"
 manifest_format = "2.0"
-project_hash = "54652fa11b1985b020edd024aea6a367fffcb361"
+project_hash = "d1fb274e688643597e8aa95bec137f07eb46434a"
 
 [[deps.Adapt]]
 deps = ["LinearAlgebra", "Requires"]
-git-tree-sha1 = "cc37d689f599e8df4f464b2fa3870ff7db7492ef"
+git-tree-sha1 = "76289dc51920fdc6e0013c872ba9551d54961c24"
 uuid = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
-version = "3.6.1"
+version = "3.6.2"
+weakdeps = ["StaticArrays"]
+
+    [deps.Adapt.extensions]
+    AdaptStaticArraysExt = "StaticArrays"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -344,26 +347,30 @@ uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.10"
 
 [[deps.Compat]]
-deps = ["Dates", "LinearAlgebra", "UUIDs"]
-git-tree-sha1 = "7a60c856b9fa189eb34f5f8a6f6b5529b7942957"
+deps = ["UUIDs"]
+git-tree-sha1 = "4e88377ae7ebeaf29a047aa1ee40826e0b708a5d"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "4.6.1"
+version = "4.7.0"
+weakdeps = ["Dates", "LinearAlgebra"]
+
+    [deps.Compat.extensions]
+    CompatLinearAlgebraExt = "LinearAlgebra"
 
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "0.5.2+0"
+version = "1.0.2+0"
 
 [[deps.DataAPI]]
-git-tree-sha1 = "e8119c1a33d267e16108be441a287a6981ba1630"
+git-tree-sha1 = "8da84edb865b0b5b0100c0666a9bc9a0b71c553c"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
-version = "1.14.0"
+version = "1.15.0"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "d1fff3a548102f48987a52a2e0d114fa97d730f0"
+git-tree-sha1 = "cf25ccb972fec4e4817764d01c82386ae94f77b4"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.18.13"
+version = "0.18.14"
 
 [[deps.DataValueInterfaces]]
 git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
@@ -376,7 +383,9 @@ uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 
 [[deps.DelimitedFiles]]
 deps = ["Mmap"]
+git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+version = "1.9.1"
 
 [[deps.Distributed]]
 deps = ["Random", "Serialization", "Sockets"]
@@ -409,21 +418,21 @@ version = "0.8.4"
 
 [[deps.GPUArraysCore]]
 deps = ["Adapt"]
-git-tree-sha1 = "1cd7f0af1aa58abc02ea1d872953a97359cb87fa"
+git-tree-sha1 = "2d6ca471a6c7b536127afccfa7564b5b39227fe0"
 uuid = "46192b85-c4d5-4398-a991-12ede77f4527"
-version = "0.1.4"
+version = "0.1.5"
 
 [[deps.GeoInterface]]
 deps = ["Extents"]
-git-tree-sha1 = "0eb6de0b312688f852f347171aba888658e29f20"
+git-tree-sha1 = "bb198ff907228523f3dee1070ceee63b9359b6ab"
 uuid = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
-version = "1.3.0"
+version = "1.3.1"
 
 [[deps.GeometryBasics]]
 deps = ["EarCut_jll", "GeoInterface", "IterTools", "LinearAlgebra", "StaticArrays", "StructArrays", "Tables"]
-git-tree-sha1 = "303202358e38d2b01ba46844b92e48a3c238fd9e"
+git-tree-sha1 = "659140c9375afa2f685e37c1a0b9c9a60ef56b40"
 uuid = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
-version = "0.4.6"
+version = "0.4.7"
 
 [[deps.Graphs]]
 deps = ["ArnoldiMethod", "Compat", "DataStructures", "Distributed", "Inflate", "LinearAlgebra", "Random", "SharedArrays", "SimpleTraits", "SparseArrays", "Statistics"]
@@ -441,9 +450,9 @@ deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[deps.IterTools]]
-git-tree-sha1 = "fa6287a4469f5e048d763df38279ee729fbd44e5"
+git-tree-sha1 = "4ced6667f9974fc5c5943fa5e2ef1ca43ea9e450"
 uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
-version = "1.4.0"
+version = "1.8.0"
 
 [[deps.IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
@@ -461,12 +470,6 @@ deps = ["Dates", "Mmap", "Parsers", "Unicode"]
 git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
 uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 version = "0.21.4"
-
-[[deps.LazyJSON]]
-deps = ["JSON", "OrderedCollections", "PropertyDicts"]
-git-tree-sha1 = "ce08411caa70e0c9e780f142f59debd89a971738"
-uuid = "fc18253b-5e1b-504c-a4a2-9ece4944c004"
-version = "0.2.2"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -497,7 +500,7 @@ uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
 version = "1.16.1+2"
 
 [[deps.LinearAlgebra]]
-deps = ["Libdl", "libblastrampoline_jll"]
+deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[deps.Logging]]
@@ -522,35 +525,24 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.0+0"
-
-[[deps.Missings]]
-deps = ["DataAPI"]
-git-tree-sha1 = "f66bdc5de519e8f8ae43bdc598782d35a25b1272"
-uuid = "e1d29d7a-bbdc-5cf2-9ac0-f12de2c33e28"
-version = "1.1.0"
+version = "2.28.2+0"
 
 [[deps.Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[deps.MolecularGraph]]
-deps = ["Colors", "Dates", "DelimitedFiles", "GeometryBasics", "Graphs", "JSON", "LinearAlgebra", "MakieCore", "Printf", "Statistics", "Unmarshal", "YAML", "coordgenlibs_jll", "libinchi_jll"]
-git-tree-sha1 = "18fa7feaca1d4af33eed1e044357327bdba7f1ce"
+deps = ["Colors", "Dates", "DelimitedFiles", "GeometryBasics", "Graphs", "JSON", "LinearAlgebra", "MakieCore", "Printf", "Statistics", "YAML", "coordgenlibs_jll", "libinchi_jll"]
+git-tree-sha1 = "69c0b571f93f400850d098a2246c0f4911f7119d"
 uuid = "6c89ec66-9cd8-5372-9f91-fabc50dd27fd"
-version = "0.14.0"
+version = "0.15.1"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.2.1"
+version = "2022.10.11"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
-
-[[deps.Nullables]]
-git-tree-sha1 = "8f87854cc8f3685a60689d8edecaa29d2251979b"
-uuid = "4d1e1d77-625e-5b40-9113-a560ec7a8ecd"
-version = "1.0.0"
 
 [[deps.Observables]]
 git-tree-sha1 = "6862738f9796b3edc1c09d0890afce4eca9e7e93"
@@ -560,7 +552,7 @@ version = "0.5.4"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.20+0"
+version = "0.3.21+4"
 
 [[deps.OrderedCollections]]
 git-tree-sha1 = "d321bf2de576bf25ec4d3e4360faca399afca282"
@@ -568,21 +560,27 @@ uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 version = "1.6.0"
 
 [[deps.Parsers]]
-deps = ["Dates", "SnoopPrecompile"]
-git-tree-sha1 = "478ac6c952fddd4399e71d4779797c538d0ff2bf"
+deps = ["Dates", "PrecompileTools", "UUIDs"]
+git-tree-sha1 = "4b2e829ee66d4218e0cef22c0a64ee37cf258c29"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.5.8"
+version = "2.7.1"
 
 [[deps.Pkg]]
-deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
+deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.8.0"
+version = "1.9.0"
+
+[[deps.PrecompileTools]]
+deps = ["Preferences"]
+git-tree-sha1 = "9673d39decc5feece56ef3940e5dafba15ba0f81"
+uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
+version = "1.1.2"
 
 [[deps.Preferences]]
 deps = ["TOML"]
-git-tree-sha1 = "47e5f437cc0e7ef2ce8406ce1e7e24d44915f88d"
+git-tree-sha1 = "7eb1686b4f04b82f96ed7a4ea5890a4f0c7a09f1"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
-version = "1.3.0"
+version = "1.4.0"
 
 [[deps.Printf]]
 deps = ["Unicode"]
@@ -591,11 +589,6 @@ uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 [[deps.Profile]]
 deps = ["Printf"]
 uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
-
-[[deps.PropertyDicts]]
-git-tree-sha1 = "8cf3b5cea994cfa9f238e19c3946a39cf051896c"
-uuid = "f8a19df8-e894-5f55-a973-672c1158cbca"
-version = "0.1.2"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
@@ -633,24 +626,22 @@ git-tree-sha1 = "5d7e3f4e11935503d3ecaf7186eac40602e7d231"
 uuid = "699a6c99-e7fa-54fc-8d76-47d257e15c1d"
 version = "0.9.4"
 
-[[deps.SnoopPrecompile]]
-deps = ["Preferences"]
-git-tree-sha1 = "e760a70afdcd461cf01a575947738d359234665c"
-uuid = "66db9d55-30c0-4569-8b51-7e840670fc0c"
-version = "1.0.3"
-
 [[deps.Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 
 [[deps.SparseArrays]]
-deps = ["LinearAlgebra", "Random"]
+deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[deps.StaticArrays]]
-deps = ["LinearAlgebra", "Random", "StaticArraysCore", "Statistics"]
-git-tree-sha1 = "63e84b7fdf5021026d0f17f76af7c57772313d99"
+deps = ["LinearAlgebra", "Random", "StaticArraysCore"]
+git-tree-sha1 = "0da7e6b70d1bb40b1ace3b576da9ea2992f76318"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
-version = "1.5.21"
+version = "1.6.0"
+weakdeps = ["Statistics"]
+
+    [deps.StaticArrays.extensions]
+    StaticArraysStatisticsExt = "Statistics"
 
 [[deps.StaticArraysCore]]
 git-tree-sha1 = "6b7ba252635a5eff6a0b0664a41ee140a1c9e72a"
@@ -660,6 +651,7 @@ version = "1.4.0"
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+version = "1.9.0"
 
 [[deps.StringEncodings]]
 deps = ["Libiconv_jll"]
@@ -673,10 +665,15 @@ git-tree-sha1 = "521a0e828e98bb69042fec1809c1b5a680eb7389"
 uuid = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
 version = "0.6.15"
 
+[[deps.SuiteSparse_jll]]
+deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
+uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
+version = "5.10.1+6"
+
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
-version = "1.0.0"
+version = "1.0.3"
 
 [[deps.TableTraits]]
 deps = ["IteratorInterfaceExtensions"]
@@ -693,7 +690,7 @@ version = "1.10.1"
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
-version = "1.10.1"
+version = "1.10.0"
 
 [[deps.Test]]
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
@@ -706,39 +703,33 @@ uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 [[deps.Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
-[[deps.Unmarshal]]
-deps = ["JSON", "LazyJSON", "Missings", "Nullables", "Requires"]
-git-tree-sha1 = "ee46863309f8f942249e1df1b74ba3088ff0f151"
-uuid = "cbff2730-442d-58d7-89d1-8e530c41eb02"
-version = "0.4.4"
-
 [[deps.YAML]]
 deps = ["Base64", "Dates", "Printf", "StringEncodings"]
-git-tree-sha1 = "dbc7f1c0012a69486af79c8bcdb31be820670ba2"
+git-tree-sha1 = "e6330e4b731a6af7959673621e91645eb1356884"
 uuid = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
-version = "0.4.8"
+version = "0.4.9"
 
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.12+3"
+version = "1.2.13+0"
 
 [[deps.coordgenlibs_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "8a0fdb746dfc75758d0abea3196f5edfcbbebd79"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "93fce743c1b36cde0efde11b1867cb7d16b13bf8"
 uuid = "f6050b86-aaaf-512f-8549-0afff1b4d57f"
-version = "3.0.1+0"
+version = "3.0.2+0"
 
 [[deps.libblastrampoline_jll]]
-deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
+deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.1.1+0"
+version = "5.8.0+0"
 
 [[deps.libinchi_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "034ee07d3b387a4ca1a153a43a0c46549b6749ba"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "e81a593eb6a1a57d4262a3ed18a6efbc5d8ba83c"
 uuid = "172afb32-8f1c-513b-968f-184fcd77af72"
-version = "1.5.1+0"
+version = "1.6.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]

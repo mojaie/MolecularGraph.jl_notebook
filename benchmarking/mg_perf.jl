@@ -25,11 +25,8 @@ let
 	doxorubicin = raw"CN(C)c1ccc(c2c1C[C@H]3C[C@H]4[C@@H](C(=C(C(=O)[C@]4(C(=C3C2=O)O)O)C(=O)N)O)N(C)C)O"
 
 	function findmcs(mol1, mol2)
-	    mol1_ = tdmces_constraints(mol1, :any)
-	    mol2_ = tdmces_constraints(mol2, :any)
-		#prod = modular_product(mol1_, mol2_)
-		# q, _ = maximum_clique(prod, timeout=2)
-		# println(length(q))
+		q, _ = tdmces(mol1, mol1, diameter=8)
+		print(length(q))
 		#println(nv(prod))
 		#println(ne(prod))
 	end

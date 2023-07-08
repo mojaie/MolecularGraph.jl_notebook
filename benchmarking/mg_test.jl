@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.26
+# v0.19.25
 
 using Markdown
 using InteractiveUtils
@@ -62,7 +62,28 @@ let
 	html_grid([svg1, svg2], 3, 250)
 end
 
+# ╔═╡ 5ba7d2bd-bd30-4b97-a425-e1f67df75199
+smiles = [
+    "c1c2ccccc2ccc1",
+    "C1=CC=C2C(=C1)C=CC3=CC=CC=C32",
+    "c1c2cc3cc4ccccc4cc3cc2ccc1",
+    "c1ccc2c(c1)ccc3c2ccc4c3cccc4",
+    "c1cc2cccc3c2c4c1cccc4cc3",
+    "c1cc2ccc3ccc4ccc5ccc6ccc1c7c2c3c4c5c67",
+    "c16ccc2ccc3ccc5c4c(c1c2c34)c(cc5)cc6",
+    raw"c1ccc3c6c1cccc6\C=C/2\c4cccc5cccc(\C=C\23)c45",
+    "c1ccc2c(c1)c3cccc4c3c5c2cccc5c6c4cccc6"
+];
+
+# ╔═╡ 2f543a99-f251-465a-99c0-d2682826fc5c
+let
+    for (i, j) in combinations(1:length(smiles))
+        score = tdmces(smiles[i], smiles[j])
+        println(f'{i} {j} {score}')
+
 # ╔═╡ Cell order:
 # ╠═21cea84e-126c-11ee-21b7-992b40f8d4ee
 # ╠═3e067d65-930b-42b1-a399-7312660b4db1
 # ╠═61294436-762a-4f02-bd9b-1ae8ecbd0c3c
+# ╠═5ba7d2bd-bd30-4b97-a425-e1f67df75199
+# ╠═2f543a99-f251-465a-99c0-d2682826fc5c

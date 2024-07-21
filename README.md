@@ -5,30 +5,30 @@ MolecularGraph.jl tutorial notebooks (Pluto.jl)
 To run codes in your environment, see `Edit or run this notebook` instruction shown in the top-right of the tutorial pages below.
 
 - [Getting started](https://mojaie.github.io/MolecularGraph.jl_notebook/getting_started.html)
-- [Molecular graph basics](https://mojaie.github.io/MolecularGraph.jl_notebook/molecular_graph_basics.jl.html)
+- [Molecular graph basics](https://mojaie.github.io/MolecularGraph.jl_notebook/molecular_graph_basics.html)
   - Scope of MolecularGraph.jl
   - Considerations in molecular graph implementation
   - Basic operations provided by Graphs.jl interface
   - MolGraph type and atom/bond properties
-- [Properties and descriptors](https://mojaie.github.io/MolecularGraph.jl_notebook/properties_and_descriptors.jl.html)
+- [Properties and descriptors](https://mojaie.github.io/MolecularGraph.jl_notebook/properties_and_descriptors.html)
   - Built-in molecule properties and descriptors
     - Lipinski's Rule of five (RO5)
     - Molecular formula
     - Atom and bond properties
     - Graph topology (ring and fused ring)
   - Auto-update mechanism of properties
-- [Preprocessing](https://mojaie.github.io/MolecularGraph.jl_notebook/preprocessing.jl.html)
+- [Preprocessing](https://mojaie.github.io/MolecularGraph.jl_notebook/preprocessing.html)
   - Remove hydrogen vertices
   - Extract molecules of interest
   - Standardize charges
   - Dealing with resonance structure
   - Customize property updater
-- [Mass and isotopes](https://mojaie.github.io/MolecularGraph.jl_notebook/mass_and_isotopes.jl.html)
+- [Mass and isotopes](https://mojaie.github.io/MolecularGraph.jl_notebook/mass_and_isotopes.html)
   - Molecular weight and exact mass
   - Uncertainty
   - Isotopic composition
   - Simulate mass spectrum
-- [Substructure and query](https://mojaie.github.io/MolecularGraph.jl_notebook/substructure_and_query.jl.html)
+- [Substructure and query](https://mojaie.github.io/MolecularGraph.jl_notebook/substructure_and_query.html)
   - Substructure match
   - InChI and InChIKey
   - SMARTS query
@@ -41,13 +41,14 @@ To run codes in your environment, see `Edit or run this notebook` instruction sh
   - Connected or disconnected MCS
   - Working with larger molecules
   - Topological constraint (tdMCS)
-- [Drawing molecule](https://mojaie.github.io/MolecularGraph.jl_notebook/drawing_molecule.jl.html)
-  - Settings of 2D structure images
-    - Change image size
-    - Layout for web and Pluto notebook
-  - Regenerate 2D coordinates
+- [Drawing molecule](https://mojaie.github.io/MolecularGraph.jl_notebook/drawing_molecule.html)
+  - 2D structure images
+    - Display and export in SVG format
+    - Display and export in PNG format
+    - Layout for Pluto notebook
+    - Regenerate coordinates
   - 3D molecule rendering using Makie.jl
-- [Stereochemistry](https://mojaie.github.io/MolecularGraph.jl_notebook/stereochemistry.jl.html)
+- [Stereochemistry](https://mojaie.github.io/MolecularGraph.jl_notebook/stereochemistry.html)
   - Stereochemistry as a molecular graph property
   - Stereospecific implicit hydrogens
 
@@ -126,4 +127,4 @@ License
 Copyright
 ------------------------
 
-(C) 2020-2023 Seiji Matsuoka
+(C) 2020-2024 Seiji Matsuoka
